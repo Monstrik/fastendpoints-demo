@@ -20,4 +20,5 @@ obj/
 frontend/node_modules/
 frontend/.next/
 frontend/.env.local
+frontend/tsconfig.tsbuildinfo
 
