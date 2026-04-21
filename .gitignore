@@ -1,0 +1,18 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.DotSettings.user
+
+# JetBrains Rider
+.idea/
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
