@@ -7,3 +7,5 @@ bld.Services.AddSingleton<IUserStore, InMemoryUserStore>();
 var app = bld.Build();
 app.UseFastEndpoints();
 app.Run();
+
+public partial class Program;
