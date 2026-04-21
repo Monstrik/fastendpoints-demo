@@ -18,9 +18,11 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         var adminToken = await LoginAndGetToken("admin", "Admin123!");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
 
+        var login = $"aya-user-{Guid.NewGuid():N}";
+
         var createRequest = new CreateUserRequest
         {
-            Login = "aya-user",
+            Login = login,
             Password = "User123!",
             FirstName = "Aya",
             LastName = "Kovi",
@@ -66,9 +68,11 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         var adminToken = await LoginAndGetToken("admin", "Admin123!");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
 
+        var login = $"regular-user-{Guid.NewGuid():N}";
+
         _ = await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
         {
-            Login = "regular-user",
+            Login = login,
             Password = "User123!",
             FirstName = "Regular",
             LastName = "User",
@@ -76,7 +80,7 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
             Role = UserRole.User
         });
 
-        var userToken = await LoginAndGetToken("regular-user", "User123!");
+        var userToken = await LoginAndGetToken(login, "User123!");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
 
         var listResponse = await _client.GetAsync("/api/users");
@@ -87,7 +91,39 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
 
         var me = await meResponse.Content.ReadFromJsonAsync<UserResponse>();
         Assert.NotNull(me);
-        Assert.Equal("regular-user", me!.Login);
+        Assert.Equal(login, me!.Login);
+    }
+
+    [Fact]
+    public async Task RegularUser_CanUpdateOwnAge()
+    {
+        var adminToken = await LoginAndGetToken("admin", "Admin123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var login = $"age-user-{Guid.NewGuid():N}";
+
+        _ = await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
+        {
+            Login = login,
+            Password = "User123!",
+            FirstName = "Age",
+            LastName = "User",
+            Age = 20,
+            Role = UserRole.User
+        });
+
+        var userToken = await LoginAndGetToken(login, "User123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+
+        var updateResponse = await _client.PutAsJsonAsync("/api/me/age", new { age = 31 });
+        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+
+        var meResponse = await _client.GetAsync("/api/me");
+        Assert.Equal(HttpStatusCode.OK, meResponse.StatusCode);
+
+        var me = await meResponse.Content.ReadFromJsonAsync<UserResponse>();
+        Assert.NotNull(me);
+        Assert.Equal(31, me!.Age);
     }
 
     private async Task<string> LoginAndGetToken(string login, string password)

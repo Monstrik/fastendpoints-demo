@@ -27,6 +27,11 @@ public sealed class UserByIdRequest
     public Guid Id { get; set; }
 }
 
+public sealed class UpdateMyAgeRequest
+{
+    public int Age { get; set; }
+}
+
 public sealed class UserResponse
 {
     public Guid Id { get; set; }
@@ -136,6 +141,56 @@ public sealed class GetMyProfileEndpoint(IUserStore store) : EndpointWithoutRequ
         }
 
         await Send.OkAsync(UserResponse.From(user), ct);
+    }
+}
+
+public sealed class UpdateMyAgeEndpoint(IUserStore store) : Endpoint<UpdateMyAgeRequest, UserResponse>
+{
+    public override void Configure()
+    {
+        Put("/api/me/age");
+        Roles(UserRole.Admin.ToString(), UserRole.User.ToString());
+    }
+
+    public override async Task HandleAsync(UpdateMyAgeRequest req, CancellationToken ct)
+    {
+        if (req.Age is < 1 or > 130)
+        {
+            AddError(r => r.Age, "Age must be between 1 and 130.");
+            await Send.ErrorsAsync(cancellation: ct);
+            return;
+        }
+
+        var idRaw = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(idRaw, out var id))
+        {
+            await Send.UnauthorizedAsync(ct);
+            return;
+        }
+
+        var current = store.GetById(id);
+        if (current is null)
+        {
+            await Send.UnauthorizedAsync(ct);
+            return;
+        }
+
+        var updated = store.Update(
+            current.Id,
+            current.Login,
+            null,
+            current.FirstName,
+            current.LastName,
+            req.Age,
+            current.Role);
+
+        if (updated is null)
+        {
+            await Send.NotFoundAsync(ct);
+            return;
+        }
+
+        await Send.OkAsync(UserResponse.From(updated), ct);
     }
 }
 

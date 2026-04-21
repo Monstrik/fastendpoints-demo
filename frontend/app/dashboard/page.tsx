@@ -11,6 +11,9 @@ export default async function DashboardPage() {
       <p>Name: {user.fullName}</p>
       <p>Age: {user.age}</p>
       <p>Role: {user.role}</p>
+      <p>
+        <a href="/user">My Profile</a>
+      </p>
 
       {user.role.toLowerCase() === "admin" && (
         <p>
