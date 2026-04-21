@@ -1,6 +1,7 @@
 using System.Text;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,7 +13,11 @@ if (string.IsNullOrWhiteSpace(jwtOptions.SigningKey))
 
 bld.Services.AddFastEndpoints();
 bld.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
-bld.Services.AddSingleton<IUserStore, InMemoryUserStore>();
+
+bld.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(bld.Configuration.GetConnectionString("Default") ?? "Data Source=app.db"));
+bld.Services.AddScoped<IUserStore, EfUserStore>();
+
 bld.Services
     .AddOptions<JwtOptions>()
     .Bind(bld.Configuration.GetSection(JwtOptions.SectionName))
@@ -51,6 +56,10 @@ app.Run();
 static void SeedAdminUser(IServiceProvider services)
 {
     using var scope = services.CreateScope();
+
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+
     var store = scope.ServiceProvider.GetRequiredService<IUserStore>();
 
     if (store.GetByLogin("admin") is not null)
