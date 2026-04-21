@@ -1,20 +1,18 @@
 public class UserResponseTests
 {
-    [Theory]
-    [InlineData(17, false)]
-    [InlineData(19, true)]
-    public void From_MapsFieldsAndComputesIsOver18(int age, bool expectedIsOver18)
+    [Fact]
+    public void From_MapsFields()
     {
-        var user = new InMemoryUser(Guid.NewGuid(), "Aya", "Kovi", age);
+        var user = new AppUser(Guid.NewGuid(), "aya", "hash", "Aya", "Kovi", 19, UserRole.User);
 
         var response = UserResponse.From(user);
 
         Assert.Equal(user.Id, response.Id);
+        Assert.Equal("aya", response.Login);
         Assert.Equal("Aya", response.FirstName);
         Assert.Equal("Kovi", response.LastName);
-        Assert.Equal(age, response.Age);
+        Assert.Equal(19, response.Age);
         Assert.Equal("Aya Kovi", response.FullName);
-        Assert.Equal(expectedIsOver18, response.IsOver18);
+        Assert.Equal("User", response.Role);
     }
 }
-

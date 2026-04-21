@@ -1,18 +1,25 @@
+using System.Security.Claims;
 using FastEndpoints;
 
 public sealed class CreateUserRequest
 {
+    public required string Login { get; set; }
+    public required string Password { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public int Age { get; set; }
+    public UserRole Role { get; set; } = UserRole.User;
 }
 
 public sealed class UpdateUserRequest
 {
     public Guid Id { get; set; }
+    public required string Login { get; set; }
+    public string? Password { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public int Age { get; set; }
+    public UserRole Role { get; set; } = UserRole.User;
 }
 
 public sealed class UserByIdRequest
@@ -23,37 +30,46 @@ public sealed class UserByIdRequest
 public sealed class UserResponse
 {
     public Guid Id { get; set; }
+    public required string Login { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public int Age { get; set; }
     public required string FullName { get; set; }
-    public bool IsOver18 { get; set; }
+    public required string Role { get; set; }
 
-    public static UserResponse From(InMemoryUser user)
+    public static UserResponse From(AppUser user)
     {
         return new UserResponse
         {
             Id = user.Id,
+            Login = user.Login,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Age = user.Age,
             FullName = user.FirstName + " " + user.LastName,
-            IsOver18 = user.Age > 18
+            Role = user.Role.ToString()
         };
     }
 }
 
-public sealed class CreateUserEndpoint(IUserStore store) : Endpoint<CreateUserRequest, UserResponse>
+public sealed class CreateUserEndpoint(IUserStore store, IPasswordHasher passwordHasher) : Endpoint<CreateUserRequest, UserResponse>
 {
     public override void Configure()
     {
         Post("/api/users");
-        AllowAnonymous();
+        Roles(UserRole.Admin.ToString());
     }
 
     public override async Task HandleAsync(CreateUserRequest req, CancellationToken ct)
     {
-        var created = store.Create(req.FirstName, req.LastName, req.Age);
+        var created = store.Create(req.Login, passwordHasher.Hash(req.Password), req.FirstName, req.LastName, req.Age, req.Role);
+        if (created is null)
+        {
+            AddError(r => r.Login, "Login already exists.");
+            await Send.ErrorsAsync(cancellation: ct);
+            return;
+        }
+
         await Send.CreatedAtAsync<GetUserByIdEndpoint>(new { id = created.Id }, UserResponse.From(created), cancellation: ct);
     }
 }
@@ -63,7 +79,7 @@ public sealed class ListUsersEndpoint(IUserStore store) : EndpointWithoutRequest
     public override void Configure()
     {
         Get("/api/users");
-        AllowAnonymous();
+        Roles(UserRole.Admin.ToString());
     }
 
     public override async Task HandleAsync(CancellationToken ct)
@@ -78,7 +94,7 @@ public sealed class GetUserByIdEndpoint(IUserStore store) : Endpoint<UserByIdReq
     public override void Configure()
     {
         Get("/api/users/{id}");
-        AllowAnonymous();
+        Roles(UserRole.Admin.ToString());
     }
 
     public override async Task HandleAsync(UserByIdRequest req, CancellationToken ct)
@@ -95,21 +111,51 @@ public sealed class GetUserByIdEndpoint(IUserStore store) : Endpoint<UserByIdReq
     }
 }
 
-public sealed class UpdateUserEndpoint(IUserStore store) : Endpoint<UpdateUserRequest, UserResponse>
+public sealed class GetMyProfileEndpoint(IUserStore store) : EndpointWithoutRequest<UserResponse>
+{
+    public override void Configure()
+    {
+        Get("/api/me");
+        Roles(UserRole.Admin.ToString(), UserRole.User.ToString());
+    }
+
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        var idRaw = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(idRaw, out var id))
+        {
+            await Send.UnauthorizedAsync(ct);
+            return;
+        }
+
+        var user = store.GetById(id);
+        if (user is null)
+        {
+            await Send.UnauthorizedAsync(ct);
+            return;
+        }
+
+        await Send.OkAsync(UserResponse.From(user), ct);
+    }
+}
+
+public sealed class UpdateUserEndpoint(IUserStore store, IPasswordHasher passwordHasher) : Endpoint<UpdateUserRequest, UserResponse>
 {
     public override void Configure()
     {
         Put("/api/users/{id}");
-        AllowAnonymous();
+        Roles(UserRole.Admin.ToString());
     }
 
     public override async Task HandleAsync(UpdateUserRequest req, CancellationToken ct)
     {
-        var updated = store.Update(req.Id, req.FirstName, req.LastName, req.Age);
+        var hashedPassword = string.IsNullOrWhiteSpace(req.Password) ? null : passwordHasher.Hash(req.Password);
+        var updated = store.Update(req.Id, req.Login, hashedPassword, req.FirstName, req.LastName, req.Age, req.Role);
 
         if (updated is null)
         {
-            await Send.NotFoundAsync(ct);
+            AddError(r => r.Login, "User not found or login already exists.");
+            await Send.ErrorsAsync(cancellation: ct);
             return;
         }
 
@@ -122,7 +168,7 @@ public sealed class DeleteUserEndpoint(IUserStore store) : Endpoint<UserByIdRequ
     public override void Configure()
     {
         Delete("/api/users/{id}");
-        AllowAnonymous();
+        Roles(UserRole.Admin.ToString());
     }
 
     public override async Task HandleAsync(UserByIdRequest req, CancellationToken ct)
@@ -136,4 +182,3 @@ public sealed class DeleteUserEndpoint(IUserStore store) : Endpoint<UserByIdRequ
         await Send.NoContentAsync(ct);
     }
 }
-
