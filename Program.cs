@@ -8,4 +8,5 @@ var app = bld.Build();
 app.UseFastEndpoints();
 app.Run();
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public partial class Program;
