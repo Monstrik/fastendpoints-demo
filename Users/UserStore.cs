@@ -13,15 +13,16 @@ public sealed record AppUser(
     string FirstName,
     string LastName,
     int Age,
-    UserRole Role);
+    UserRole Role,
+    string Status = UserStatuses.Default);
 
 public interface IUserStore
 {
-    AppUser? Create(string login, string passwordHash, string firstName, string lastName, int age, UserRole role);
+    AppUser? Create(string login, string passwordHash, string firstName, string lastName, int age, UserRole role, string? status = null);
     IReadOnlyList<AppUser> GetAll();
     AppUser? GetById(Guid id);
     AppUser? GetByLogin(string login);
-    AppUser? Update(Guid id, string login, string? passwordHash, string firstName, string lastName, int age, UserRole role);
+    AppUser? Update(Guid id, string login, string? passwordHash, string firstName, string lastName, int age, UserRole role, string? status = null);
     bool Delete(Guid id);
 }
 
@@ -30,10 +31,10 @@ public sealed class InMemoryUserStore : IUserStore
     private readonly ConcurrentDictionary<Guid, AppUser> _users = new();
     private readonly ConcurrentDictionary<string, Guid> _idsByLogin = new(StringComparer.OrdinalIgnoreCase);
 
-    public AppUser? Create(string login, string passwordHash, string firstName, string lastName, int age, UserRole role)
+    public AppUser? Create(string login, string passwordHash, string firstName, string lastName, int age, UserRole role, string? status = null)
     {
         var trimmedLogin = login.Trim();
-        var user = new AppUser(Guid.NewGuid(), trimmedLogin, passwordHash, firstName, lastName, age, role);
+        var user = new AppUser(Guid.NewGuid(), trimmedLogin, passwordHash, firstName, lastName, age, role, status ?? UserStatuses.Default);
 
         if (!_idsByLogin.TryAdd(trimmedLogin, user.Id))
             return null;
@@ -62,7 +63,7 @@ public sealed class InMemoryUserStore : IUserStore
         return GetById(id);
     }
 
-    public AppUser? Update(Guid id, string login, string? passwordHash, string firstName, string lastName, int age, UserRole role)
+    public AppUser? Update(Guid id, string login, string? passwordHash, string firstName, string lastName, int age, UserRole role, string? status = null)
     {
         while (true)
         {
@@ -87,7 +88,8 @@ public sealed class InMemoryUserStore : IUserStore
                 FirstName = firstName,
                 LastName = lastName,
                 Age = age,
-                Role = role
+                Role = role,
+                Status = status ?? current.Status
             };
 
             if (_users.TryUpdate(id, updated, current))

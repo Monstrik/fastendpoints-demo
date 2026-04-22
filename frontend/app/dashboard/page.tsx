@@ -10,6 +10,7 @@ export default async function DashboardPage() {
       <p>Login: {user.login}</p>
       <p>Name: {user.fullName}</p>
       <p>Age: {user.age}</p>
+      <p>Status: {user.status}</p>
       <p>Role: {user.role}</p>
       <p>
         <a href="/user">My Profile</a>

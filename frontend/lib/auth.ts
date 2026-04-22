@@ -12,6 +12,7 @@ export type AuthUser = {
   age: number;
   fullName: string;
   role: string;
+  status: string;
 };
 
 export function getAuthToken() {

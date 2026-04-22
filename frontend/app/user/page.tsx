@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth";
-import { UpdateAgeForm } from "@/app/user/update-age-form";
+import { UpdateStatusForm } from "@/app/user/update-age-form";
 
 export default async function UserPage() {
   const user = await requireAuth();
@@ -8,12 +8,11 @@ export default async function UserPage() {
     <section>
       <h1>My Profile</h1>
       <p>Login: {user.login}</p>
-      <p>Current age: {user.age}</p>
-      <UpdateAgeForm currentAge={user.age} />
+      <p>Current status: {user.status}</p>
+      <UpdateStatusForm currentStatus={user.status} />
       <p>
         <a href="/dashboard">Back to dashboard</a>
       </p>
     </section>
   );
 }
-

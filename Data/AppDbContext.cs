@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(u => u.Login).HasMaxLength(100);
             e.Property(u => u.FirstName).HasMaxLength(100);
             e.Property(u => u.LastName).HasMaxLength(100);
+            e.Property(u => u.Status).HasMaxLength(100).HasDefaultValue(UserStatuses.Default);
         });
     }
 }
@@ -26,9 +27,10 @@ public class UserEntity
     public string LastName { get; set; } = "";
     public int Age { get; set; }
     public UserRole Role { get; set; }
+    public string Status { get; set; } = UserStatuses.Default;
 
     public AppUser ToDomain() =>
-        new(Id, Login, PasswordHash, FirstName, LastName, Age, Role);
+        new(Id, Login, PasswordHash, FirstName, LastName, Age, Role, Status);
 
     public static UserEntity FromDomain(AppUser user) => new()
     {
@@ -38,7 +40,8 @@ public class UserEntity
         FirstName = user.FirstName,
         LastName = user.LastName,
         Age = user.Age,
-        Role = user.Role
+        Role = user.Role,
+        Status = user.Status
     };
 }
 

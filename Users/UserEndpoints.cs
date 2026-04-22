@@ -27,9 +27,9 @@ public sealed class UserByIdRequest
     public Guid Id { get; set; }
 }
 
-public sealed class UpdateMyAgeRequest
+public sealed class UpdateMyStatusRequest
 {
-    public int Age { get; set; }
+    public required string Status { get; set; }
 }
 
 public sealed class UserResponse
@@ -41,6 +41,7 @@ public sealed class UserResponse
     public int Age { get; set; }
     public required string FullName { get; set; }
     public required string Role { get; set; }
+    public required string Status { get; set; }
 
     public static UserResponse From(AppUser user)
     {
@@ -52,7 +53,8 @@ public sealed class UserResponse
             LastName = user.LastName,
             Age = user.Age,
             FullName = user.FirstName + " " + user.LastName,
-            Role = user.Role.ToString()
+            Role = user.Role.ToString(),
+            Status = user.Status
         };
     }
 }
@@ -144,19 +146,19 @@ public sealed class GetMyProfileEndpoint(IUserStore store) : EndpointWithoutRequ
     }
 }
 
-public sealed class UpdateMyAgeEndpoint(IUserStore store) : Endpoint<UpdateMyAgeRequest, UserResponse>
+public sealed class UpdateMyStatusEndpoint(IUserStore store) : Endpoint<UpdateMyStatusRequest, UserResponse>
 {
     public override void Configure()
     {
-        Put("/api/me/age");
+        Put("/api/me/status");
         Roles(UserRole.Admin.ToString(), UserRole.User.ToString());
     }
 
-    public override async Task HandleAsync(UpdateMyAgeRequest req, CancellationToken ct)
+    public override async Task HandleAsync(UpdateMyStatusRequest req, CancellationToken ct)
     {
-        if (req.Age is < 1 or > 130)
+        if (!UserStatuses.Allowed.Contains(req.Status))
         {
-            AddError(r => r.Age, "Age must be between 1 and 130.");
+            AddError(r => r.Status, "Status is not allowed.");
             await Send.ErrorsAsync(cancellation: ct);
             return;
         }
@@ -181,8 +183,9 @@ public sealed class UpdateMyAgeEndpoint(IUserStore store) : Endpoint<UpdateMyAge
             null,
             current.FirstName,
             current.LastName,
-            req.Age,
-            current.Role);
+            current.Age,
+            current.Role,
+            req.Status);
 
         if (updated is null)
         {

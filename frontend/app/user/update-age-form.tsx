@@ -2,12 +2,66 @@
 
 import { FormEvent, useState } from "react";
 
+const statusOptions = [
+  "🟢 Available",
+  "💻 Online",
+  "🛠️ Working",
+  "🎯 Focused",
+  "🧠 Heads-down",
+  "✅ On task",
+  "⚡ Active",
+  "🆓 Free",
+  "🔴 Busy",
+  "📅 In a meeting",
+  "🎤 Presenting",
+  "📞 On a call",
+  "🔕 Do not disturb",
+  "🧑‍💻 Deep work",
+  "⛔ Blocked",
+  "🔄 Context switching",
+  "🍽️ Eating",
+  "🔨 In progress",
+  "👀 Reviewing",
+  "💻 Coding",
+  "🧪 Testing",
+  "🐞 Debugging",
+  "🎨 Designing",
+  "🔍 Researching",
+  "📝 Documenting",
+  "⏳ Waiting for input",
+  "✅ Waiting for approval",
+  "🏠 Working from home",
+  "🏢 In office",
+  "🌍 Remote",
+  "✈️ Traveling",
+  "🔜 Back soon",
+  "🚶 Stepped away",
+  "🕒 Away briefly",
+  "🐢 Delayed response",
+  "⏱️ Limited availability",
+  "🌴 Out of office (OOO)",
+  "🏖️ On vacation",
+  "🤒 Sick leave",
+  "🧑‍⚕️ Personal leave",
+  "🎉 Holiday",
+  "🛌 Day off",
+  "🚧 Blocked by dependency",
+  "🤝 Waiting on another team",
+  "🧑‍💼 Waiting on customer",
+  "📋 Awaiting requirements",
+  "⚫ Offline",
+  "❓ Unknown",
+  "🆕 Onboarding",
+  "📟 On-call",
+  "🌙 After hours"
+] as const;
+
 type Props = {
-  currentAge: number;
+  currentStatus: string;
 };
 
-export function UpdateAgeForm({ currentAge }: Props) {
-  const [age, setAge] = useState(currentAge);
+export function UpdateStatusForm({ currentStatus }: Props) {
+  const [status, setStatus] = useState(currentStatus);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,11 +73,11 @@ export function UpdateAgeForm({ currentAge }: Props) {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/me/age", {
+      const response = await fetch("/api/me/status", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ age })
+        body: JSON.stringify({ status })
       });
 
       if (!response.ok) {
@@ -32,13 +86,13 @@ export function UpdateAgeForm({ currentAge }: Props) {
           | null;
         const errorMessage =
           body?.errors ? Object.values(body.errors).flat()[0] : body?.message;
-        setError(errorMessage ?? "Could not update age.");
+        setError(errorMessage ?? "Could not update status.");
         return;
       }
 
-      const updated = (await response.json()) as { age: number };
-      setAge(updated.age);
-      setMessage("Age updated successfully.");
+      const updated = (await response.json()) as { status: string };
+      setStatus(updated.status);
+      setMessage("Status updated successfully.");
     } finally {
       setIsSubmitting(false);
     }
@@ -46,24 +100,26 @@ export function UpdateAgeForm({ currentAge }: Props) {
 
   return (
     <form onSubmit={onSubmit}>
-      <label htmlFor="age">Age</label>
-      <input
-        id="age"
-        type="number"
-        min={1}
-        max={130}
-        value={age}
-        onChange={(event) => setAge(parseInt(event.target.value, 10))}
+      <label htmlFor="status">Status</label>
+      <select
+        id="status"
+        value={status}
+        onChange={(event) => setStatus(event.target.value)}
         required
-      />
+      >
+        {statusOptions.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
 
       {message ? <p>{message}</p> : null}
       {error ? <p style={{ color: "red" }}>{error}</p> : null}
 
       <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Saving..." : "Save age"}
+        {isSubmitting ? "Saving..." : "Save status"}
       </button>
     </form>
   );
 }
-

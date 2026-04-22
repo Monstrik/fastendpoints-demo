@@ -14,5 +14,6 @@ public class UserResponseTests
         Assert.Equal(19, response.Age);
         Assert.Equal("Aya Kovi", response.FullName);
         Assert.Equal("User", response.Role);
+        Assert.Equal(UserStatuses.Default, response.Status);
     }
 }

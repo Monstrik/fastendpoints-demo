@@ -95,7 +95,7 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
     }
 
     [Fact]
-    public async Task RegularUser_CanUpdateOwnAge()
+    public async Task RegularUser_CanUpdateOwnStatus()
     {
         var adminToken = await LoginAndGetToken("admin", "Admin123!");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
@@ -115,7 +115,7 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         var userToken = await LoginAndGetToken(login, "User123!");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
 
-        var updateResponse = await _client.PutAsJsonAsync("/api/me/age", new { age = 31 });
+        var updateResponse = await _client.PutAsJsonAsync("/api/me/status", new { status = "💻 Online" });
         Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
 
         var meResponse = await _client.GetAsync("/api/me");
@@ -123,7 +123,7 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
 
         var me = await meResponse.Content.ReadFromJsonAsync<UserResponse>();
         Assert.NotNull(me);
-        Assert.Equal(31, me!.Age);
+        Assert.Equal("💻 Online", me!.Status);
     }
 
     private async Task<string> LoginAndGetToken(string login, string password)
