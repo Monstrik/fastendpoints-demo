@@ -115,7 +115,7 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         var userToken = await LoginAndGetToken(login, "User123!");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
 
-        var updateResponse = await _client.PutAsJsonAsync("/api/me/status", new { status = "💻 Online" });
+        var updateResponse = await _client.PutAsJsonAsync("/api/me/status", new { status = "🎯 Focused" });
         Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
 
         var meResponse = await _client.GetAsync("/api/me");
@@ -123,7 +123,7 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
 
         var me = await meResponse.Content.ReadFromJsonAsync<UserResponse>();
         Assert.NotNull(me);
-        Assert.Equal("💻 Online", me!.Status);
+        Assert.Equal("🎯 Focused", me!.Status);
     }
 
     [Fact]
