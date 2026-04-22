@@ -59,7 +59,6 @@ static void SeedAdminUser(IServiceProvider services)
 
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
-    EnsureStatusColumn(db);
 
     var store = scope.ServiceProvider.GetRequiredService<IUserStore>();
 
@@ -70,17 +69,6 @@ static void SeedAdminUser(IServiceProvider services)
     _ = store.Create("admin", passwordHasher.Hash("Admin123!"), "System", "Admin", UserRole.Admin);
 }
 
-static void EnsureStatusColumn(AppDbContext db)
-{
-    try
-    {
-        db.Database.ExecuteSqlRaw($"ALTER TABLE Users ADD COLUMN Status TEXT NOT NULL DEFAULT '{UserStatuses.Default}'");
-    }
-    catch
-    {
-        // Column already exists or table not present yet.
-    }
-}
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public partial class Program;
