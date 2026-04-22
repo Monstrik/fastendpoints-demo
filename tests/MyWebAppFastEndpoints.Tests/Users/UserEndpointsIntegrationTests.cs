@@ -26,7 +26,6 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
             Password = "User123!",
             FirstName = "Aya",
             LastName = "Kovi",
-            Age = 21,
             Role = UserRole.User
         };
 
@@ -55,7 +54,6 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
             Password = "User123!",
             FirstName = "Anon",
             LastName = "User",
-            Age = 20,
             Role = UserRole.User
         });
 
@@ -76,7 +74,6 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
             Password = "User123!",
             FirstName = "Regular",
             LastName = "User",
-            Age = 22,
             Role = UserRole.User
         });
 
@@ -100,15 +97,14 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         var adminToken = await LoginAndGetToken("admin", "Admin123!");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
 
-        var login = $"age-user-{Guid.NewGuid():N}";
+        var login = $"status-user-{Guid.NewGuid():N}";
 
         _ = await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
         {
             Login = login,
             Password = "User123!",
-            FirstName = "Age",
+            FirstName = "Status",
             LastName = "User",
-            Age = 20,
             Role = UserRole.User
         });
 

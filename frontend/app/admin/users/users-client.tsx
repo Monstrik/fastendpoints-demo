@@ -10,7 +10,6 @@ export function AdminUsersClient() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [age, setAge] = useState(30);
   const [role, setRole] = useState(1); // 0 = Admin, 1 = User
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +38,7 @@ export function AdminUsersClient() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ login, password, firstName, lastName, age, role })
+      body: JSON.stringify({ login, password, firstName, lastName, role })
     });
 
     if (!response.ok) {
@@ -53,7 +52,6 @@ export function AdminUsersClient() {
     setPassword("");
     setFirstName("");
     setLastName("");
-    setAge(30);
     setRole(1);
     await fetchUsers();
   }
@@ -115,15 +113,6 @@ export function AdminUsersClient() {
           required
         />
 
-        <label htmlFor="age">Age</label>
-        <input
-          id="age"
-          type="number"
-          value={age}
-          onChange={(event) => setAge(parseInt(event.target.value, 10))}
-          required
-        />
-
         <label htmlFor="role">Role</label>
         <select id="role" value={role} onChange={(event) => setRole(parseInt(event.target.value, 10))}>
           <option value={0}>Admin</option>
@@ -144,7 +133,7 @@ export function AdminUsersClient() {
             <tr>
               <th>Login</th>
               <th>Name</th>
-              <th>Age</th>
+              <th>Status</th>
               <th>Role</th>
               <th>Actions</th>
             </tr>
@@ -154,7 +143,7 @@ export function AdminUsersClient() {
               <tr key={user.id}>
                 <td>{user.login}</td>
                 <td>{user.fullName}</td>
-                <td>{user.age}</td>
+                <td>{user.status}</td>
                 <td>{user.role}</td>
                 <td>
                   <button type="button" onClick={() => onDeleteUser(user.id)}>

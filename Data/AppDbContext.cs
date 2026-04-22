@@ -25,12 +25,11 @@ public class UserEntity
     public string PasswordHash { get; set; } = "";
     public string FirstName { get; set; } = "";
     public string LastName { get; set; } = "";
-    public int Age { get; set; }
     public UserRole Role { get; set; }
     public string Status { get; set; } = UserStatuses.Default;
 
     public AppUser ToDomain() =>
-        new(Id, Login, PasswordHash, FirstName, LastName, Age, Role, Status);
+        new(Id, Login, PasswordHash, FirstName, LastName, Role, Status);
 
     public static UserEntity FromDomain(AppUser user) => new()
     {
@@ -39,9 +38,7 @@ public class UserEntity
         PasswordHash = user.PasswordHash,
         FirstName = user.FirstName,
         LastName = user.LastName,
-        Age = user.Age,
         Role = user.Role,
         Status = user.Status
     };
 }
-

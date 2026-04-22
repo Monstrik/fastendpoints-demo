@@ -9,7 +9,6 @@ export type AuthUser = {
   login: string;
   firstName: string;
   lastName: string;
-  age: number;
   fullName: string;
   role: string;
   status: string;

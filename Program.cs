@@ -67,7 +67,7 @@ static void SeedAdminUser(IServiceProvider services)
         return;
 
     var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
-    _ = store.Create("admin", passwordHasher.Hash("Admin123!"), "System", "Admin", 30, UserRole.Admin);
+    _ = store.Create("admin", passwordHasher.Hash("Admin123!"), "System", "Admin", UserRole.Admin);
 }
 
 static void EnsureStatusColumn(AppDbContext db)

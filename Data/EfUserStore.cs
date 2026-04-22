@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 public sealed class EfUserStore(AppDbContext db) : IUserStore
 {
-    public AppUser? Create(string login, string passwordHash, string firstName, string lastName, int age, UserRole role, string? status = null)
+    public AppUser? Create(string login, string passwordHash, string firstName, string lastName, UserRole role, string? status = null)
     {
         var trimmed = login.Trim();
 
@@ -16,7 +16,6 @@ public sealed class EfUserStore(AppDbContext db) : IUserStore
             PasswordHash = passwordHash,
             FirstName = firstName,
             LastName = lastName,
-            Age = age,
             Role = role,
             Status = status ?? UserStatuses.Default
         };
@@ -42,7 +41,7 @@ public sealed class EfUserStore(AppDbContext db) : IUserStore
         return db.Users.AsNoTracking().FirstOrDefault(u => u.Login == trimmed)?.ToDomain();
     }
 
-    public AppUser? Update(Guid id, string login, string? passwordHash, string firstName, string lastName, int age, UserRole role, string? status = null)
+    public AppUser? Update(Guid id, string login, string? passwordHash, string firstName, string lastName, UserRole role, string? status = null)
     {
         var trimmed = login.Trim();
 
@@ -57,7 +56,6 @@ public sealed class EfUserStore(AppDbContext db) : IUserStore
             entity.PasswordHash = passwordHash;
         entity.FirstName = firstName;
         entity.LastName = lastName;
-        entity.Age = age;
         entity.Role = role;
         entity.Status = status ?? entity.Status;
 
@@ -75,4 +73,3 @@ public sealed class EfUserStore(AppDbContext db) : IUserStore
         return true;
     }
 }
-

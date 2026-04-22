@@ -7,7 +7,6 @@ public sealed class CreateUserRequest
     public required string Password { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
-    public int Age { get; set; }
     public UserRole Role { get; set; } = UserRole.User;
 }
 
@@ -18,7 +17,6 @@ public sealed class UpdateUserRequest
     public string? Password { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
-    public int Age { get; set; }
     public UserRole Role { get; set; } = UserRole.User;
 }
 
@@ -38,7 +36,6 @@ public sealed class UserResponse
     public required string Login { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
-    public int Age { get; set; }
     public required string FullName { get; set; }
     public required string Role { get; set; }
     public required string Status { get; set; }
@@ -51,7 +48,6 @@ public sealed class UserResponse
             Login = user.Login,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            Age = user.Age,
             FullName = user.FirstName + " " + user.LastName,
             Role = user.Role.ToString(),
             Status = user.Status
@@ -86,7 +82,7 @@ public sealed class CreateUserEndpoint(IUserStore store, IPasswordHasher passwor
 
     public override async Task HandleAsync(CreateUserRequest req, CancellationToken ct)
     {
-        var created = store.Create(req.Login, passwordHasher.Hash(req.Password), req.FirstName, req.LastName, req.Age, req.Role);
+        var created = store.Create(req.Login, passwordHasher.Hash(req.Password), req.FirstName, req.LastName, req.Role);
         if (created is null)
         {
             AddError(r => r.Login, "Login already exists.");
@@ -215,7 +211,6 @@ public sealed class UpdateMyStatusEndpoint(IUserStore store) : Endpoint<UpdateMy
             null,
             current.FirstName,
             current.LastName,
-            current.Age,
             current.Role,
             req.Status);
 
@@ -240,7 +235,7 @@ public sealed class UpdateUserEndpoint(IUserStore store, IPasswordHasher passwor
     public override async Task HandleAsync(UpdateUserRequest req, CancellationToken ct)
     {
         var hashedPassword = string.IsNullOrWhiteSpace(req.Password) ? null : passwordHasher.Hash(req.Password);
-        var updated = store.Update(req.Id, req.Login, hashedPassword, req.FirstName, req.LastName, req.Age, req.Role);
+        var updated = store.Update(req.Id, req.Login, hashedPassword, req.FirstName, req.LastName, req.Role);
 
         if (updated is null)
         {

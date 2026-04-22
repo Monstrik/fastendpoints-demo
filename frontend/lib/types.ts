@@ -3,9 +3,9 @@ export type AdminUser = {
   login: string;
   firstName: string;
   lastName: string;
-  age: number;
   fullName: string;
   role: string;
+  status: string;
 };
 
 export type CreateAdminUserInput = {
@@ -13,7 +13,6 @@ export type CreateAdminUserInput = {
   password: string;
   firstName: string;
   lastName: string;
-  age: number;
   role: string;
 };
 
@@ -22,4 +21,3 @@ export type PublicUserStatus = {
   fullName: string;
   status: string;
 };
-

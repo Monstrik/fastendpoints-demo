@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth";
-import { UpdateStatusForm } from "@/app/user/update-age-form";
+import { UpdateStatusForm } from "@/app/user/update-status-form";
 
 export default async function UserPage() {
   const user = await requireAuth();
