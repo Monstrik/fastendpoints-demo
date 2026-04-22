@@ -27,15 +27,15 @@ Minimal frontend for auth + dashboard + admin user management, backed by existin
 
 ```bash
 cd frontend
-npm install
-npm run dev
+w pnpm install
+pnpm run dev
 ```
 
 ## Type Check
 
 ```bash
 cd frontend
-npm run typecheck
+pnpm run typecheck
 ```
 
 ## Notes
