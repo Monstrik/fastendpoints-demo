@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { ThemeToggle } from "@/app/theme-toggle";
 
 interface User {
   id: string;
@@ -15,7 +16,9 @@ interface User {
 export function Navigation() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -35,10 +38,25 @@ export function Navigation() {
     fetchUser();
   }, []);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [menuOpen]);
+
   const handleLogout = async () => {
     const response = await fetch("/api/auth/logout", { method: "POST" });
     if (response.ok) {
       setUser(null);
+      setMenuOpen(false);
       router.push("/login");
     }
   };
@@ -54,35 +72,59 @@ export function Navigation() {
           <Link href="/users">View Users</Link>
         </li>
       </ul>
-      <ul className="nav-links nav-right">
+      <div className="nav-right-container">
         {user ? (
-          <>
-            <li className="nav-user-info">
-              <span className="nav-username">{user.login}</span>
-            </li>
-            <li>
-              <Link href="/dashboard">Dashboard</Link>
-            </li>
-            <li>
-              <Link href="/user">My Profile</Link>
-            </li>
-            {user.role.toLowerCase() === "admin" && (
-              <li>
-                <Link href="/admin/users">Manage Users</Link>
-              </li>
+          <div className="user-menu-container" ref={menuRef}>
+            <button
+              className="user-icon-button"
+              onClick={() => setMenuOpen(!menuOpen)}
+              title={user.login}
+            >
+              <span className="user-icon">👤</span>
+            </button>
+            {menuOpen && (
+              <div className="user-dropdown-menu">
+                <div className="menu-header">
+                  <span className="menu-username">{user.login}</span>
+                </div>
+                <ul className="menu-items">
+                  <li>
+                    <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
+                      Dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/user" onClick={() => setMenuOpen(false)}>
+                      My Profile
+                    </Link>
+                  </li>
+                  {user.role.toLowerCase() === "admin" && (
+                    <li>
+                      <Link href="/admin/users" onClick={() => setMenuOpen(false)}>
+                        Manage Users
+                      </Link>
+                    </li>
+                  )}
+                  <li className="menu-divider"></li>
+                  <li className="theme-toggle-item">
+                    <span>Theme</span>
+                    <ThemeToggle />
+                  </li>
+                  <li>
+                    <button onClick={handleLogout} className="logout-button">
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
             )}
-            <li>
-              <button onClick={handleLogout} className="nav-logout">
-                Logout
-              </button>
-            </li>
-          </>
+          </div>
         ) : (
-          <li>
-            <Link href="/login">Login</Link>
-          </li>
+          <Link href="/login" className="nav-login-link">
+            Login
+          </Link>
         )}
-      </ul>
+      </div>
     </nav>
   );
 }
