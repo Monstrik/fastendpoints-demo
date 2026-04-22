@@ -8,7 +8,7 @@
   --text: #e7eaf0;
   --muted-border: #2b3140;
   --surface: #151922;
-  --link: #8db5ff;
+  --link: #1f9306;
 }
 
 .light {
@@ -16,7 +16,7 @@
   --text: #111827;
   --muted-border: #d1d5db;
   --surface: #f8fafc;
-  --link: #1d4ed8;
+  --link: #1f9306;
 }
 
 * {
@@ -64,6 +64,41 @@ button {
   border-radius: 6px;
   background: var(--surface);
   color: var(--text);
+}
+
+button:not(.theme-switch) {
+  cursor: pointer;
+  font-weight: 600;
+  background: var(--link);
+  color: #fff;
+  border-color: transparent;
+  transition: filter 0.15s ease, transform 0.05s ease;
+}
+
+button:not(.theme-switch):hover {
+  filter: brightness(1.08);
+}
+
+button:not(.theme-switch):active {
+  transform: translateY(1px);
+}
+
+button:not(.theme-switch):disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  filter: none;
+  transform: none;
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--link);
+  border-color: var(--link);
+}
+
+button.secondary:hover {
+  background: var(--link);
+  color: #fff;
 }
 
 .theme-switch {
