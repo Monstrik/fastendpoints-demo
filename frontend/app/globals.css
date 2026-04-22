@@ -39,7 +39,7 @@ a {
 header {
   max-width: 100%;
   margin: 0;
-  padding: 12px 24px 0;
+  padding: 5px 24px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -52,6 +52,7 @@ header {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  min-height: 56px;
   gap: 24px;
 }
 
@@ -203,18 +204,13 @@ header {
 
 .nav-login-link {
   color: var(--link);
-  text-decoration: none;
+  text-decoration: underline;
   font-size: 14px;
-  padding: 8px 16px;
-  border: 1px solid var(--link);
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  display: inline-block;
+  transition: opacity 0.2s ease;
 }
 
 .nav-login-link:hover {
-  background: var(--link);
-  color: #fff;
+  opacity: 0.8;
 }
 
 main {

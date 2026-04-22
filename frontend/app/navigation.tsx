@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { ThemeToggle } from "@/app/theme-toggle";
 
@@ -18,7 +18,10 @@ export function Navigation() {
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
+  const normalizedPath = pathname?.replace(/\/$/, "") || "/";
+  const isLoginRoute = normalizedPath === "/login";
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -120,9 +123,11 @@ export function Navigation() {
             )}
           </div>
         ) : (
-          <Link href="/login" className="nav-login-link">
-            Login
-          </Link>
+          !isLoginRoute && (
+            <Link href="/login" className="nav-login-link">
+              Login
+            </Link>
+          )
         )}
       </div>
     </nav>
