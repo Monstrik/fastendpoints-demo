@@ -22,6 +22,10 @@ export function Navigation() {
   const menuRef = useRef<HTMLDivElement>(null);
   const normalizedPath = pathname?.replace(/\/$/, "") || "/";
   const isLoginRoute = normalizedPath === "/login";
+  const isCurrentRoute = (href: string) => {
+    const normalizedHref = href.replace(/\/$/, "") || "/";
+    return normalizedPath === normalizedHref;
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -71,9 +75,11 @@ export function Navigation() {
   return (
     <nav className="nav-menu">
       <ul className="nav-links nav-left">
-        <li>
-          <Link href="/users">View Users</Link>
-        </li>
+        {!isCurrentRoute("/users") && (
+          <li>
+            <Link href="/users">View Users</Link>
+          </li>
+        )}
       </ul>
       <div className="nav-right-container">
         {user ? (
@@ -91,17 +97,21 @@ export function Navigation() {
                   <span className="menu-username">{user.login}</span>
                 </div>
                 <ul className="menu-items">
-                  <li>
-                    <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
-                      Dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/user" onClick={() => setMenuOpen(false)}>
-                      My Profile
-                    </Link>
-                  </li>
-                  {user.role.toLowerCase() === "admin" && (
+                  {!isCurrentRoute("/dashboard") && (
+                    <li>
+                      <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
+                        Dashboard
+                      </Link>
+                    </li>
+                  )}
+                  {!isCurrentRoute("/user") && (
+                    <li>
+                      <Link href="/user" onClick={() => setMenuOpen(false)}>
+                        My Profile
+                      </Link>
+                    </li>
+                  )}
+                  {user.role.toLowerCase() === "admin" && !isCurrentRoute("/admin/users") && (
                     <li>
                       <Link href="/admin/users" onClick={() => setMenuOpen(false)}>
                         Manage Users

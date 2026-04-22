@@ -16,9 +16,6 @@ export default async function LoginPage() {
       <p>
         <a href="/forgot-password">Forgot password?</a>
       </p>
-      <p>
-        <a href="/users">View user statuses</a>
-      </p>
     </section>
   );
 }
