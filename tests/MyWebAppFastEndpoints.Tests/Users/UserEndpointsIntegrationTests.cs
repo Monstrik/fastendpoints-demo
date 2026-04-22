@@ -126,6 +126,20 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         Assert.Equal("💻 Online", me!.Status);
     }
 
+    [Fact]
+    public async Task Anonymous_CanReadPublicUserStatuses()
+    {
+        _client.DefaultRequestHeaders.Authorization = null;
+
+        var response = await _client.GetAsync("/api/public/users");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var users = await response.Content.ReadFromJsonAsync<List<PublicUserStatusResponse>>();
+        Assert.NotNull(users);
+        Assert.Contains(users!, u => !string.IsNullOrWhiteSpace(u.Login));
+        Assert.Contains(users!, u => !string.IsNullOrWhiteSpace(u.Status));
+    }
+
     private async Task<string> LoginAndGetToken(string login, string password)
     {
         _client.DefaultRequestHeaders.Authorization = null;

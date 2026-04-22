@@ -59,6 +59,23 @@ public sealed class UserResponse
     }
 }
 
+public sealed class PublicUserStatusResponse
+{
+    public required string Login { get; set; }
+    public required string FullName { get; set; }
+    public required string Status { get; set; }
+
+    public static PublicUserStatusResponse From(AppUser user)
+    {
+        return new PublicUserStatusResponse
+        {
+            Login = user.Login,
+            FullName = user.FirstName + " " + user.LastName,
+            Status = user.Status
+        };
+    }
+}
+
 public sealed class CreateUserEndpoint(IUserStore store, IPasswordHasher passwordHasher) : Endpoint<CreateUserRequest, UserResponse>
 {
     public override void Configure()
@@ -92,6 +109,21 @@ public sealed class ListUsersEndpoint(IUserStore store) : EndpointWithoutRequest
     public override async Task HandleAsync(CancellationToken ct)
     {
         var users = store.GetAll().Select(UserResponse.From).ToList();
+        await Send.OkAsync(users, ct);
+    }
+}
+
+public sealed class ListPublicUsersEndpoint(IUserStore store) : EndpointWithoutRequest<List<PublicUserStatusResponse>>
+{
+    public override void Configure()
+    {
+        Get("/api/public/users");
+        AllowAnonymous();
+    }
+
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        var users = store.GetAll().Select(PublicUserStatusResponse.From).ToList();
         await Send.OkAsync(users, ct);
     }
 }

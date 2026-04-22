@@ -16,3 +16,10 @@ export type CreateAdminUserInput = {
   age: number;
   role: string;
 };
+
+export type PublicUserStatus = {
+  login: string;
+  fullName: string;
+  status: string;
+};
+
