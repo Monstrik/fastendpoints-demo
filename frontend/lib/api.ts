@@ -15,10 +15,19 @@ export async function backendFetch(path: string, init: BackendRequestInit = {}) 
     headers.set("Authorization", `Bearer ${init.token}`);
   }
 
-  return fetch(`${BACKEND_URL}${path}`, {
-    ...init,
-    headers,
-    cache: "no-store"
-  });
+  try {
+    return await fetch(`${BACKEND_URL}${path}`, {
+      ...init,
+      headers,
+      cache: "no-store"
+    });
+  } catch {
+    return new Response(
+      JSON.stringify({ message: "Service unavailable. Please try again shortly." }),
+      {
+        status: 503,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
 }
-

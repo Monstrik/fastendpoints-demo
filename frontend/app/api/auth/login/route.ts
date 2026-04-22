@@ -16,8 +16,14 @@ export async function POST(request: Request) {
   const responseBody = await backendResponse.json().catch(() => null);
 
   if (!backendResponse.ok) {
+    const message =
+      backendResponse.status === 401
+        ? "Invalid credentials."
+        : ((responseBody as { message?: string } | null)?.message ??
+          "Service unavailable. Please try again shortly.");
+
     return NextResponse.json(
-      { message: "Invalid credentials." },
+      { message },
       { status: backendResponse.status }
     );
   }
