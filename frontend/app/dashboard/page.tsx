@@ -20,10 +20,7 @@ export default async function DashboardPage() {
           <a href="/admin/users">Manage Users</a>
         </p>
       )}
-
-      <form action="/api/auth/logout" method="post">
-        <button type="submit">Logout</button>
-      </form>
+        
     </section>
   );
 }

@@ -42,9 +42,6 @@ export default async function UsersStatusPage() {
           ))}
         </tbody>
       </table>
-      <p>
-        <a href="/login">Back to login</a>
-      </p>
     </section>
   );
 }

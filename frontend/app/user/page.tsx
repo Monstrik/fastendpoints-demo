@@ -10,9 +10,6 @@ export default async function UserPage() {
       <p>Login: {user.login}</p>
       <p>Current status: {user.status}</p>
       <UpdateStatusForm currentStatus={user.status} />
-      <p>
-        <a href="/dashboard">Back to dashboard</a>
-      </p>
     </section>
   );
 }
