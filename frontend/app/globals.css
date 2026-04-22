@@ -1,3 +1,20 @@
+:root,
+.dark {
+  --bg: #0f1115;
+  --text: #e7eaf0;
+  --muted-border: #2b3140;
+  --surface: #151922;
+  --link: #8db5ff;
+}
+
+.light {
+  --bg: #ffffff;
+  --text: #111827;
+  --muted-border: #d1d5db;
+  --surface: #f8fafc;
+  --link: #1d4ed8;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,6 +24,20 @@ body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: var(--link);
+}
+
+header {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 12px 24px 0;
+  display: flex;
+  justify-content: flex-end;
 }
 
 main {
@@ -25,6 +56,47 @@ select,
 button {
   padding: 8px;
   font-size: 14px;
+  border: 1px solid var(--muted-border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.theme-switch {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.theme-switch-track {
+  width: 52px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--muted-border);
+  background: var(--surface);
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  transition: background 0.2s ease;
+}
+
+.theme-switch-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-size: 12px;
+  line-height: 1;
+  transform: translateX(0);
+  transition: transform 0.2s ease;
+}
+
+.theme-switch-track.is-light .theme-switch-thumb {
+  transform: translateX(24px);
 }
 
 table {
@@ -34,8 +106,7 @@ table {
 
 th,
 td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--muted-border);
   padding: 8px;
   text-align: left;
 }
-
