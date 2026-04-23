@@ -14,7 +14,9 @@ export async function PUT(
 
   const backendResponse = await backendFetch(`/api/posts/${params.id}/hide`, {
     method: "PUT",
-    token
+    token,
+    body: "{}",
+    headers: { "Content-Type": "application/json" }
   });
 
   const body = await backendResponse.text();
