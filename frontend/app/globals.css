@@ -454,7 +454,9 @@ button.reaction-button:disabled {
 }
 
 .reaction-count {
+  font-size: 12px;
   min-width: 1ch;
+  padding: 0 1ch;
 }
 
 .post-card-visibility {

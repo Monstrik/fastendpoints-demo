@@ -92,30 +92,45 @@ export function PostCard({
       </div>
       <p className="post-card-content">{post.content}</p>
       <div className="post-card-reactions">
-        <button
-          type="button"
-          className={`reaction-button ${post.viewerReaction === "Like" ? "is-active" : ""}`}
-          onClick={() => onReact?.(post, "Like")}
-          disabled={!canReact || isReacting}
-          aria-label={`Like post. ${post.likesCount} likes.`}
-          aria-pressed={post.viewerReaction === "Like"}
-          title="Like"
-        >
-          <span className="reaction-icon" aria-hidden="true">👍</span>
-          <span className="reaction-count">{post.likesCount}</span>
-        </button>
-        <button
-          type="button"
-          className={`reaction-button ${post.viewerReaction === "Dislike" ? "is-active" : ""}`}
-          onClick={() => onReact?.(post, "Dislike")}
-          disabled={!canReact || isReacting}
-          aria-label={`Dislike post. ${post.dislikesCount} dislikes.`}
-          aria-pressed={post.viewerReaction === "Dislike"}
-          title="Dislike"
-        >
-          <span className="reaction-icon" aria-hidden="true">👎</span>
-          <span className="reaction-count">{post.dislikesCount}</span>
-        </button>
+        {canReact ? (
+          <>
+            <button
+              type="button"
+              className={`reaction-button ${post.viewerReaction === "Like" ? "is-active" : ""}`}
+              onClick={() => onReact?.(post, "Like")}
+              disabled={!canReact || isReacting}
+              aria-label={`Like post. ${post.likesCount} likes.`}
+              aria-pressed={post.viewerReaction === "Like"}
+              title="Like"
+            >
+              <span className="reaction-icon" aria-hidden="true">👍</span>
+              <span className="reaction-count">{post.likesCount}</span>
+            </button>
+            <button
+              type="button"
+              className={`reaction-button ${post.viewerReaction === "Dislike" ? "is-active" : ""}`}
+              onClick={() => onReact?.(post, "Dislike")}
+              disabled={!canReact || isReacting}
+              aria-label={`Dislike post. ${post.dislikesCount} dislikes.`}
+              aria-pressed={post.viewerReaction === "Dislike"}
+              title="Dislike"
+            >
+              <span className="reaction-icon" aria-hidden="true">👎</span>
+              <span className="reaction-count">{post.dislikesCount}</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="reaction-view-only">
+              <span className="reaction-icon" aria-hidden="true">👍</span>
+              <span className="reaction-count">{post.likesCount}</span>
+            </div>
+            <div className="reaction-view-only">
+              <span className="reaction-icon" aria-hidden="true">👎</span>
+              <span className="reaction-count">{post.dislikesCount}</span>
+            </div>
+          </>
+        )}
       </div>
     </article>
   );

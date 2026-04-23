@@ -74,5 +74,54 @@ describe("PostCard", () => {
     expect(screen.getByText("Unknown time")).toBeInTheDocument();
     expect(screen.getByText("Unknown date")).toBeInTheDocument();
   });
+
+  it("shows view icon and likes count for non-authenticated users", () => {
+    const post: PublicPost = {
+      id: "post-4",
+      authorLogin: "aya",
+      authorStatus: "🟢 Available",
+      content: "This is a public post",
+      createdAtUtc: "2026-04-23T10:00:00",
+      likesCount: 5,
+      dislikesCount: 2,
+      viewerReaction: null
+    };
+
+    render(<PostCard post={post} canReact={false} />);
+
+    // Should show like and dislike icons without buttons
+    const likeIcons = screen.getAllByText("👍");
+    const dislikeIcons = screen.getAllByText("👎");
+    expect(likeIcons.length).toBeGreaterThan(0);
+    expect(dislikeIcons.length).toBeGreaterThan(0);
+    // Should show likes and dislikes counts
+    expect(screen.getByText("5")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
+    // Should not show as buttons (should be divs)
+    expect(screen.queryByRole("button", { name: /Like post/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Dislike post/i })).not.toBeInTheDocument();
+  });
+
+  it("shows like and dislike buttons for authenticated users", () => {
+    const onReact = vi.fn();
+    const post: PublicPost = {
+      id: "post-5",
+      authorLogin: "aya",
+      authorStatus: "🟢 Available",
+      content: "This is a public post",
+      createdAtUtc: "2026-04-23T10:00:00",
+      likesCount: 5,
+      dislikesCount: 2,
+      viewerReaction: null
+    };
+
+    render(<PostCard post={post} canReact={true} onReact={onReact} />);
+
+    // Should show like and dislike buttons
+    expect(screen.getByText("👍")).toBeInTheDocument();
+    expect(screen.getByText("👎")).toBeInTheDocument();
+    // Should not show view icon
+    expect(screen.queryByText("👁️")).not.toBeInTheDocument();
+  });
 });
 
