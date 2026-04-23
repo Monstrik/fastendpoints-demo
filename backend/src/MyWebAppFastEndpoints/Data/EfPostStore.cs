@@ -1,25 +1,41 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using ILogger = Serilog.ILogger;
 
+/// <summary>
+/// Entity Framework Core implementation of IPostStore with structured logging.
+/// </summary>
 public sealed class EfPostStore(AppDbContext db) : IPostStore
 {
+    private static readonly ILogger Logger = Log.ForContext<EfPostStore>();
+
     public AppPost Create(Guid authorId, string authorLogin, string content)
     {
-        var trimmedContent = content.Trim();
-
-        var entity = new PostEntity
+        try
         {
-            Id = Guid.NewGuid(),
-            AuthorId = authorId,
-            AuthorLogin = authorLogin,
-            Content = trimmedContent,
-            CreatedAtUtc = DateTime.UtcNow,
-            IsHidden = false
-        };
+            var trimmedContent = content.Trim();
 
-        db.Posts.Add(entity);
-        db.SaveChanges();
+            var entity = new PostEntity
+            {
+                Id = Guid.NewGuid(),
+                AuthorId = authorId,
+                AuthorLogin = authorLogin,
+                Content = trimmedContent,
+                CreatedAtUtc = DateTime.UtcNow,
+                IsHidden = false
+            };
 
-        return BuildPosts([entity], authorId).First();
+            db.Posts.Add(entity);
+            db.SaveChanges();
+
+            Logger.Information("Post created: {PostId} by {AuthorLogin}", entity.Id, authorLogin);
+            return BuildPosts([entity], authorId).First();
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error creating post by {AuthorLogin}", authorLogin);
+            throw;
+        }
     }
 
     public IReadOnlyList<AppPost> GetAll(Guid? viewerId = null) =>
@@ -50,70 +66,119 @@ public sealed class EfPostStore(AppDbContext db) : IPostStore
 
     public AppPost? Hide(Guid id)
     {
-        var entity = db.Posts.FirstOrDefault(p => p.Id == id);
-        if (entity is null)
-            return null;
+        try
+        {
+            var entity = db.Posts.FirstOrDefault(p => p.Id == id);
+            if (entity is null)
+            {
+                Logger.Warning("Post hide failed: post '{PostId}' not found", id);
+                return null;
+            }
 
-        entity.IsHidden = true;
-        db.SaveChanges();
+            entity.IsHidden = true;
+            db.SaveChanges();
 
-        return GetById(id, null);
+            Logger.Information("Post hidden: {PostId}", id);
+            return GetById(id, null);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error hiding post '{PostId}'", id);
+            throw;
+        }
     }
 
     public AppPost? Unhide(Guid id)
     {
-        var entity = db.Posts.FirstOrDefault(p => p.Id == id);
-        if (entity is null)
-            return null;
+        try
+        {
+            var entity = db.Posts.FirstOrDefault(p => p.Id == id);
+            if (entity is null)
+            {
+                Logger.Warning("Post unhide failed: post '{PostId}' not found", id);
+                return null;
+            }
 
-        entity.IsHidden = false;
-        db.SaveChanges();
+            entity.IsHidden = false;
+            db.SaveChanges();
 
-        return GetById(id, null);
+            Logger.Information("Post unhidden: {PostId}", id);
+            return GetById(id, null);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error unhiding post '{PostId}'", id);
+            throw;
+        }
     }
 
     public AppPost? SetReaction(Guid postId, Guid userId, PostReactionType reaction)
     {
-        var postExists = db.Posts.Any(p => p.Id == postId);
-        if (!postExists)
-            return null;
-
-        var current = db.PostReactions.FirstOrDefault(r => r.PostId == postId && r.UserId == userId);
-
-        if (current is null)
+        try
         {
-            db.PostReactions.Add(new PostReactionEntity
+            var postExists = db.Posts.Any(p => p.Id == postId);
+            if (!postExists)
             {
-                Id = Guid.NewGuid(),
-                PostId = postId,
-                UserId = userId,
-                Reaction = reaction
-            });
+                Logger.Warning("Reaction set failed: post '{PostId}' not found", postId);
+                return null;
+            }
+
+            var current = db.PostReactions.FirstOrDefault(r => r.PostId == postId && r.UserId == userId);
+
+            if (current is null)
+            {
+                db.PostReactions.Add(new PostReactionEntity
+                {
+                    Id = Guid.NewGuid(),
+                    PostId = postId,
+                    UserId = userId,
+                    Reaction = reaction
+                });
+                Logger.Information("Reaction added: {PostId} by {UserId} ({Reaction})", postId, userId, reaction);
+            }
+            else
+            {
+                current.Reaction = reaction;
+                Logger.Information("Reaction changed: {PostId} by {UserId} to {Reaction}", postId, userId, reaction);
+            }
+
+            db.SaveChanges();
+
+            return GetById(postId, userId);
         }
-        else
+        catch (Exception ex)
         {
-            current.Reaction = reaction;
+            Logger.Error(ex, "Error setting reaction on post '{PostId}'", postId);
+            throw;
         }
-
-        db.SaveChanges();
-
-        return GetById(postId, userId);
     }
 
     public AppPost? ClearReaction(Guid postId, Guid userId)
     {
-        var postExists = db.Posts.Any(p => p.Id == postId);
-        if (!postExists)
-            return null;
-
-        var current = db.PostReactions.FirstOrDefault(r => r.PostId == postId && r.UserId == userId);
-        if (current is not null)
+        try
         {
-            db.PostReactions.Remove(current);
-            db.SaveChanges();
-        }
+            var postExists = db.Posts.Any(p => p.Id == postId);
+            if (!postExists)
+            {
+                Logger.Warning("Reaction clear failed: post '{PostId}' not found", postId);
+                return null;
+            }
 
-        return GetById(postId, userId);
+            var current = db.PostReactions.FirstOrDefault(r => r.PostId == postId && r.UserId == userId);
+            if (current is not null)
+            {
+                db.PostReactions.Remove(current);
+                db.SaveChanges();
+                Logger.Information("Reaction cleared: {PostId} by {UserId}", postId, userId);
+            }
+
+            return GetById(postId, userId);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Error clearing reaction on post '{PostId}'", postId);
+            throw;
+        }
     }
 
     private AppPost? GetById(Guid postId, Guid? viewerId)
@@ -175,4 +240,3 @@ public sealed class EfPostStore(AppDbContext db) : IPostStore
             .ToList();
     }
 }
-
