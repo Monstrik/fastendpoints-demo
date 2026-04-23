@@ -61,5 +61,32 @@ describe("PostsFeedClient", () => {
       expect(screen.getByRole("button", { name: "Hidden" })).toBeInTheDocument();
     });
   });
+
+  it("shows a friendly empty state when there are no posts", () => {
+    render(<PostsFeedClient initialPosts={[]} canModerate={false} canReact={false} />);
+
+    expect(screen.getByText("No posts yet.")).toBeInTheDocument();
+  });
+
+  it("shows an error when a reaction request fails", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({ ok: false } as Response);
+
+    const post: PublicPost = {
+      id: "post-3",
+      authorLogin: "aya",
+      authorStatus: "🟢 Available",
+      content: "React fail",
+      createdAtUtc: "2026-04-23T10:00:00Z",
+      likesCount: 0,
+      dislikesCount: 0,
+      viewerReaction: null
+    };
+
+    render(<PostsFeedClient initialPosts={[post]} canModerate={false} canReact />);
+
+    await userEvent.click(screen.getByRole("button", { name: /like post\. 0 likes\./i }));
+
+    expect(await screen.findByText("Could not update reaction.")).toBeInTheDocument();
+  });
 });
 

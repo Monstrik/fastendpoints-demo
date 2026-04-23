@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { PostCard } from "@/app/posts/post-card";
 import type { PublicPost } from "@/lib/types";
@@ -27,6 +27,52 @@ describe("PostCard", () => {
     expect(screen.getByText("🟢 Available")).toBeInTheDocument();
     expect(screen.getByText("2h ago")).toBeInTheDocument();
     expect(screen.getByText("Apr 23, 2026")).toBeInTheDocument();
+  });
+
+  it("renders visibility badge and supports moderation toggles", async () => {
+    const onToggleVisibility = vi.fn();
+
+    render(
+      <PostCard
+        post={{
+          id: "post-2",
+          authorLogin: "admin",
+          authorStatus: "🔴 Busy",
+          content: "Moderated",
+          createdAtUtc: "2026-04-23T10:00:00Z",
+          isHidden: true,
+          likesCount: 0,
+          dislikesCount: 0,
+          viewerReaction: "Like"
+        }}
+        canModerate
+        onToggleVisibility={onToggleVisibility}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Hidden" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Hidden" }));
+    expect(onToggleVisibility).toHaveBeenCalled();
+  });
+
+  it("shows unknown date text for invalid timestamps", () => {
+    render(
+      <PostCard
+        post={{
+          id: "post-3",
+          authorLogin: "aya",
+          authorStatus: "🟢 Available",
+          content: "Bad date",
+          createdAtUtc: "not-a-date",
+          likesCount: 0,
+          dislikesCount: 0,
+          viewerReaction: null
+        }}
+      />
+    );
+
+    expect(screen.getByText("Unknown time")).toBeInTheDocument();
+    expect(screen.getByText("Unknown date")).toBeInTheDocument();
   });
 });
 

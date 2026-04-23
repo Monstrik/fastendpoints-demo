@@ -15,7 +15,9 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "lcov"],
+      include: ["app/**/*.{ts,tsx}", "lib/**/*.ts"],
       exclude: [
+        "app/api/**",
         "test/**",
         "**/*.test.{ts,tsx}",
         ".next/**",
@@ -23,7 +25,8 @@ export default defineConfig({
         "next-env.d.ts",
         "tailwind.config.js",
         "postcss.config.js",
-        "next.config.js"
+        "next.config.js",
+        "lib/types.ts"
       ]
     }
   }
