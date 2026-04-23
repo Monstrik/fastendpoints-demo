@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 
 const statusOptions = [
   "🟢 Available",
@@ -41,18 +41,28 @@ export function UpdateStatusForm({ currentStatus }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function updateStatus(nextStatus: string) {
+    if (nextStatus === status || isSubmitting) {
+      return;
+    }
+
+    if (!statusOptions.includes(nextStatus as (typeof statusOptions)[number])) {
+      setError("Invalid status selected.");
+      return;
+    }
+
     setMessage(null);
     setError(null);
     setIsSubmitting(true);
+    const previousStatus = status;
+    setStatus(nextStatus);
 
     try {
       const response = await fetch("/api/me/status", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ status: nextStatus })
       });
 
       if (!response.ok) {
@@ -62,6 +72,7 @@ export function UpdateStatusForm({ currentStatus }: Props) {
         const errorMessage =
           body?.errors ? Object.values(body.errors).flat()[0] : body?.message;
         setError(errorMessage ?? "Could not update status.");
+        setStatus(previousStatus);
         return;
       }
 
@@ -74,12 +85,15 @@ export function UpdateStatusForm({ currentStatus }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form>
       <label htmlFor="status">Status</label>
       <select
         id="status"
         value={status}
-        onChange={(event) => setStatus(event.target.value)}
+        onChange={(event) => {
+          void updateStatus(event.target.value);
+        }}
+        disabled={isSubmitting}
         required
       >
         {statusOptions.map((option) => (
@@ -91,10 +105,6 @@ export function UpdateStatusForm({ currentStatus }: Props) {
 
       {message ? <p>{message}</p> : null}
       {error ? <p style={{ color: "red" }}>{error}</p> : null}
-
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Saving..." : "Save status"}
-      </button>
     </form>
   );
 }
