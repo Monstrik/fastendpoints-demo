@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   canPost: boolean;
@@ -9,6 +10,7 @@ type Props = {
 const MAX_POST_LENGTH = 280;
 
 export function CreatePost({ canPost }: Props) {
+  const router = useRouter();
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +58,8 @@ export function CreatePost({ canPost }: Props) {
 
       setContent("");
       setMessage("Post published.");
+      router.push("/dashboard");
+      router.refresh();
     } finally {
       setIsSubmitting(false);
     }
