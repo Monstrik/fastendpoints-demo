@@ -27,11 +27,11 @@ This is the backend for the MyWebApp project, built with .NET 8 and utilizing [F
 
 ### Running the Application
 
-1. Navigate to the project directory:
+1. Navigate to the backend directory:
    ```bash
-   cd backend/src/MyWebAppFastEndpoints
+   cd backend
    ```
-2. Run the application:
+2. Run the API:
    ```bash
    dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
    ```
@@ -49,8 +49,9 @@ The application automatically creates the SQLite database (`app.db`) and seeds a
 
 - `src/MyWebAppFastEndpoints/` - Main API project.
   - `Data/` - Database context and repository implementations (EF Core).
-  - `Users/` - User-related logic, endpoints, and storage interfaces.
+  - `Users/` - User-related logic (contracts, endpoints, stores).
   - `Posts/` - Post-related logic, endpoints, and storage interfaces.
+  - `Startup/` - Service registration and app initialization extensions.
 - `tests/` - Unit and integration tests.
 
 ## Testing
@@ -58,6 +59,6 @@ The application automatically creates the SQLite database (`app.db`) and seeds a
 For detailed information on running tests and generating coverage reports, see [TESTING.md](./TESTING.md).
 
 ```bash
-# Run all tests
-dotnet test backend/MyWebAppFastEndpoints.sln
+# From backend/
+dotnet test MyWebAppFastEndpoints.sln
 ```
