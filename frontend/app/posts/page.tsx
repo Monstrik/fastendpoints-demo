@@ -62,7 +62,7 @@ export default async function PostsPage() {
 
   return (
     <section>
-      <h1>{isAdmin ? "All Posts" : "Public Posts"}</h1>
+      <h1>{isAdmin ? "All Posts" : "Posts"}</h1>
       {error ? <p style={{ color: "red" }}>{error}</p> : null}
       <PostsFeedClient initialPosts={posts} canModerate={isAdmin} canReact={!!user} />
     </section>

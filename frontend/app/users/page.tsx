@@ -22,7 +22,7 @@ export default async function UsersStatusPage() {
 
   return (
     <section>
-      <h1>User Status Board</h1>
+      <h1>Users</h1>
       {error ? <p style={{ color: "red" }}>{error}</p> : null}
       <table>
         <thead>

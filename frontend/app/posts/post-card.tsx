@@ -11,7 +11,10 @@ type Props = {
 };
 
 function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
+  const date = parsePostDate(dateStr);
+  if (Number.isNaN(date.getTime())) return "Unknown time";
+
+  const diff = Math.max(0, Date.now() - date.getTime());
   const mins = Math.floor(diff / 60_000);
   if (mins < 1) return "just now";
   if (mins < 60) return `${mins}m ago`;
@@ -19,11 +22,22 @@ function timeAgo(dateStr: string): string {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString();
+  return date.toLocaleDateString();
+}
+
+function parsePostDate(dateStr: string): Date {
+  const normalized = /(?:Z|[+-]\d{2}:\d{2})$/i.test(dateStr) ? dateStr : `${dateStr}Z`;
+  return new Date(normalized);
 }
 
 function formatPostDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString(undefined, {
+  const date = parsePostDate(dateStr);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown date";
+  }
+
+  return date.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
     day: "numeric"
@@ -51,7 +65,7 @@ export function PostCard({
         <div className="post-card-meta">
           <span className="post-card-author">@{post.authorLogin}</span>
           <span className="post-card-status">{post.authorStatus}</span>
-          <div className="post-card-timestamps" title={new Date(post.createdAtUtc).toLocaleString()}>
+          <div className="post-card-timestamps" title={parsePostDate(post.createdAtUtc).toLocaleString()}>
             <span className="post-card-time">{timeAgo(post.createdAtUtc)}</span>
             <span className="post-card-date">{formatPostDate(post.createdAtUtc)}</span>
           </div>
