@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/auth";
 import { backendFetch } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth";
 import type { MyPost } from "@/lib/types";
+import Link from "next/link";
 
 async function loadMyPosts(): Promise<{ posts: MyPost[]; error: string | null }> {
   const token = getAuthToken();
@@ -42,7 +43,7 @@ export default async function DashboardPage() {
       <p>Name: {user.fullName}</p>
       <p>Status: {user.status}</p>
       <p>Role: {user.role}</p>
-
+      <Link href="/posts/create">Create New Post</Link>
       <h2>My Posts</h2>
       {error ? <p style={{ color: "red" }}>{error}</p> : null}
       {posts.length === 0 ? (
