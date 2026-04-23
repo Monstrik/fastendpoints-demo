@@ -1,5 +1,6 @@
 import { backendFetch } from "@/lib/api";
 import type { PublicPost } from "@/lib/types";
+import { PostCard } from "@/app/posts/post-card";
 
 async function loadPosts(): Promise<{ posts: PublicPost[]; error: string | null }> {
   const response = await backendFetch("/api/public/posts", { method: "GET" });
@@ -27,24 +28,11 @@ export default async function PostsPage() {
       {posts.length === 0 ? (
         <p>No posts yet.</p>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Author</th>
-              <th>Post</th>
-              <th>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {posts.map((post) => (
-              <tr key={post.id}>
-                <td>{post.authorLogin}</td>
-                <td>{post.content}</td>
-                <td>{new Date(post.createdAtUtc).toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="post-feed">
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
       )}
     </section>
   );
