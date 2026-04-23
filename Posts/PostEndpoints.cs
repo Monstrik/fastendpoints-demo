@@ -27,6 +27,24 @@ public sealed class PublicPostResponse
     };
 }
 
+public sealed class MyPostResponse
+{
+    public Guid Id { get; set; }
+    public required string AuthorLogin { get; set; }
+    public required string Content { get; set; }
+    public DateTime CreatedAtUtc { get; set; }
+    public bool IsHidden { get; set; }
+
+    public static MyPostResponse From(AppPost post) => new()
+    {
+        Id = post.Id,
+        AuthorLogin = post.AuthorLogin,
+        Content = post.Content,
+        CreatedAtUtc = post.CreatedAtUtc,
+        IsHidden = post.IsHidden
+    };
+}
+
 public sealed class CreatePostEndpoint(IUserStore users, IPostStore posts) : Endpoint<CreatePostRequest, PublicPostResponse>
 {
     private const int MaxContentLength = 280;
@@ -85,6 +103,35 @@ public sealed class ListPublicPostsEndpoint(IPostStore posts) : EndpointWithoutR
     public override async Task HandleAsync(CancellationToken ct)
     {
         var response = posts.GetPublic().Select(PublicPostResponse.From).ToList();
+        await Send.OkAsync(response, ct);
+    }
+}
+
+public sealed class ListMyPostsEndpoint(IUserStore users, IPostStore posts) : EndpointWithoutRequest<List<MyPostResponse>>
+{
+    public override void Configure()
+    {
+        Get("/api/me/posts");
+        Roles(UserRole.Admin.ToString(), UserRole.User.ToString());
+    }
+
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        var idRaw = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(idRaw, out var id))
+        {
+            await Send.UnauthorizedAsync(ct);
+            return;
+        }
+
+        var user = users.GetById(id);
+        if (user is null)
+        {
+            await Send.UnauthorizedAsync(ct);
+            return;
+        }
+
+        var response = posts.GetByAuthor(user.Id).Select(MyPostResponse.From).ToList();
         await Send.OkAsync(response, ct);
     }
 }

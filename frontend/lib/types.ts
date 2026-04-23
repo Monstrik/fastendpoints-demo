@@ -29,3 +29,11 @@ export type PublicPost = {
   createdAtUtc: string;
 };
 
+export type MyPost = {
+  id: string;
+  authorLogin: string;
+  content: string;
+  createdAtUtc: string;
+  isHidden: boolean;
+};
+

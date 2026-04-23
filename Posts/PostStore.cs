@@ -10,6 +10,7 @@ public interface IPostStore
 {
     AppPost Create(Guid authorId, string authorLogin, string content);
     IReadOnlyList<AppPost> GetPublic();
+    IReadOnlyList<AppPost> GetByAuthor(Guid authorId);
     AppPost? Hide(Guid id);
 }
 

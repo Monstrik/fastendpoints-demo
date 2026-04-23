@@ -103,6 +103,68 @@ public class PostEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         Assert.Equal(HttpStatusCode.Forbidden, hideResponse.StatusCode);
     }
 
+    [Fact]
+    public async Task MyPosts_ReturnsOwnPostsIncludingHidden_Only()
+    {
+        var adminToken = await LoginAndGetToken("admin", "Admin123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var ownerLogin = $"owner-{Guid.NewGuid():N}";
+        var otherLogin = $"other-{Guid.NewGuid():N}";
+
+        _ = await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
+        {
+            Login = ownerLogin,
+            Password = "User123!",
+            FirstName = "Owner",
+            LastName = "User",
+            Role = UserRole.User
+        });
+
+        _ = await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
+        {
+            Login = otherLogin,
+            Password = "User123!",
+            FirstName = "Other",
+            LastName = "User",
+            Role = UserRole.User
+        });
+
+        var ownerToken = await LoginAndGetToken(ownerLogin, "User123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ownerToken);
+
+        var visibleContent = $"visible-{Guid.NewGuid():N}";
+        var hiddenContent = $"hidden-{Guid.NewGuid():N}";
+
+        var visibleCreate = await _client.PostAsJsonAsync("/api/posts", new CreatePostRequest { Content = visibleContent });
+        Assert.Equal(HttpStatusCode.Created, visibleCreate.StatusCode);
+
+        var hiddenCreate = await _client.PostAsJsonAsync("/api/posts", new CreatePostRequest { Content = hiddenContent });
+        Assert.Equal(HttpStatusCode.Created, hiddenCreate.StatusCode);
+
+        var hiddenPost = await hiddenCreate.Content.ReadFromJsonAsync<PublicPostResponse>();
+        Assert.NotNull(hiddenPost);
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+        var hideResponse = await _client.PutAsJsonAsync($"/api/posts/{hiddenPost!.Id}/hide", new { });
+        Assert.Equal(HttpStatusCode.OK, hideResponse.StatusCode);
+
+        var otherToken = await LoginAndGetToken(otherLogin, "User123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", otherToken);
+
+        _ = await _client.PostAsJsonAsync("/api/posts", new CreatePostRequest { Content = $"other-{Guid.NewGuid():N}" });
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", ownerToken);
+        var myPostsResponse = await _client.GetAsync("/api/me/posts");
+        Assert.Equal(HttpStatusCode.OK, myPostsResponse.StatusCode);
+
+        var myPosts = await myPostsResponse.Content.ReadFromJsonAsync<List<MyPostResponse>>();
+        Assert.NotNull(myPosts);
+        Assert.Contains(myPosts!, p => p.Content == visibleContent && !p.IsHidden);
+        Assert.Contains(myPosts!, p => p.Content == hiddenContent && p.IsHidden);
+        Assert.DoesNotContain(myPosts!, p => p.AuthorLogin == otherLogin);
+    }
+
     private async Task<string> LoginAndGetToken(string login, string password)
     {
         _client.DefaultRequestHeaders.Authorization = null;

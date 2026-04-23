@@ -30,6 +30,14 @@ public sealed class EfPostStore(AppDbContext db) : IPostStore
             .Select(p => p.ToDomain())
             .ToList();
 
+    public IReadOnlyList<AppPost> GetByAuthor(Guid authorId) =>
+        db.Posts
+            .Where(p => p.AuthorId == authorId)
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .AsNoTracking()
+            .Select(p => p.ToDomain())
+            .ToList();
+
     public AppPost? Hide(Guid id)
     {
         var entity = db.Posts.FirstOrDefault(p => p.Id == id);
