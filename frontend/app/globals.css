@@ -396,6 +396,9 @@ td {
 }
 
 .reaction-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: transparent;
   border: 1px solid var(--muted-border);
   color: var(--text);
@@ -419,6 +422,15 @@ td {
 .reaction-button:disabled {
   cursor: not-allowed;
   opacity: 0.65;
+}
+
+.reaction-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.reaction-count {
+  min-width: 1ch;
 }
 
 .post-card-visibility {
