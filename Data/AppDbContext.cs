@@ -70,7 +70,7 @@ public class PostEntity
     public bool IsHidden { get; set; }
 
     public AppPost ToDomain() =>
-        new(Id, AuthorId, AuthorLogin, Content, CreatedAtUtc, IsHidden);
+        new(Id, AuthorId, AuthorLogin, UserStatuses.Default, Content, CreatedAtUtc, IsHidden);
 
     public static PostEntity FromDomain(AppPost post) => new()
     {

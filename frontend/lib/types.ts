@@ -25,6 +25,7 @@ export type PublicUserStatus = {
 export type PublicPost = {
   id: string;
   authorLogin: string;
+  authorStatus: string;
   content: string;
   createdAtUtc: string;
   likesCount: number;
@@ -35,6 +36,7 @@ export type PublicPost = {
 export type MyPost = {
   id: string;
   authorLogin: string;
+  authorStatus: string;
   content: string;
   createdAtUtc: string;
   isHidden: boolean;

@@ -50,6 +50,7 @@ export function PostCard({
         </span>
         <div className="post-card-meta">
           <span className="post-card-author">@{post.authorLogin}</span>
+          <span className="post-card-status">{post.authorStatus}</span>
           <div className="post-card-timestamps" title={new Date(post.createdAtUtc).toLocaleString()}>
             <span className="post-card-time">{timeAgo(post.createdAtUtc)}</span>
             <span className="post-card-date">{formatPostDate(post.createdAtUtc)}</span>

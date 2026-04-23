@@ -19,7 +19,7 @@ public sealed class EfPostStore(AppDbContext db) : IPostStore
         db.Posts.Add(entity);
         db.SaveChanges();
 
-        return entity.ToDomain();
+        return BuildPosts([entity], authorId).First();
     }
 
     public IReadOnlyList<AppPost> GetAll(Guid? viewerId = null) =>
@@ -57,7 +57,7 @@ public sealed class EfPostStore(AppDbContext db) : IPostStore
         entity.IsHidden = true;
         db.SaveChanges();
 
-        return entity.ToDomain();
+        return GetById(id, null);
     }
 
     public AppPost? Unhide(Guid id)
@@ -69,7 +69,7 @@ public sealed class EfPostStore(AppDbContext db) : IPostStore
         entity.IsHidden = false;
         db.SaveChanges();
 
-        return entity.ToDomain();
+        return GetById(id, null);
     }
 
     public AppPost? SetReaction(Guid postId, Guid userId, PostReactionType reaction)
@@ -154,11 +154,18 @@ public sealed class EfPostStore(AppDbContext db) : IPostStore
                 .ToDictionary(g => g.Key, g => (PostReactionType?)g.Last().Reaction)
             : new Dictionary<Guid, PostReactionType?>();
 
+        var authorIds = entities.Select(p => p.AuthorId).Distinct().ToList();
+        var statusByAuthor = db.Users
+            .Where(u => authorIds.Contains(u.Id))
+            .AsNoTracking()
+            .ToDictionary(u => u.Id, u => u.Status);
+
         return entities
             .Select(p => new AppPost(
                 p.Id,
                 p.AuthorId,
                 p.AuthorLogin,
+                statusByAuthor.GetValueOrDefault(p.AuthorId, UserStatuses.Default),
                 p.Content,
                 p.CreatedAtUtc,
                 p.IsHidden,

@@ -44,7 +44,7 @@ public class PostEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
 
         var posts = await listResponse.Content.ReadFromJsonAsync<List<PublicPostResponse>>();
         Assert.NotNull(posts);
-        Assert.Contains(posts!, p => p.Content == uniqueContent && p.AuthorLogin == login);
+        Assert.Contains(posts!, p => p.Content == uniqueContent && p.AuthorLogin == login && !string.IsNullOrWhiteSpace(p.AuthorStatus));
     }
 
     [Fact]

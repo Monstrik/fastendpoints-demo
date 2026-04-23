@@ -8,6 +8,7 @@ public sealed record AppPost(
     Guid Id,
     Guid AuthorId,
     string AuthorLogin,
+    string AuthorStatus,
     string Content,
     DateTime CreatedAtUtc,
     bool IsHidden,

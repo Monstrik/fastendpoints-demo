@@ -21,6 +21,7 @@ public sealed class PublicPostResponse
 {
     public Guid Id { get; set; }
     public required string AuthorLogin { get; set; }
+    public required string AuthorStatus { get; set; }
     public required string Content { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public int LikesCount { get; set; }
@@ -31,6 +32,7 @@ public sealed class PublicPostResponse
     {
         Id = post.Id,
         AuthorLogin = post.AuthorLogin,
+        AuthorStatus = post.AuthorStatus,
         Content = post.Content,
         CreatedAtUtc = post.CreatedAtUtc,
         LikesCount = post.LikesCount,
@@ -43,6 +45,7 @@ public sealed class MyPostResponse
 {
     public Guid Id { get; set; }
     public required string AuthorLogin { get; set; }
+    public required string AuthorStatus { get; set; }
     public required string Content { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public bool IsHidden { get; set; }
@@ -54,6 +57,7 @@ public sealed class MyPostResponse
     {
         Id = post.Id,
         AuthorLogin = post.AuthorLogin,
+        AuthorStatus = post.AuthorStatus,
         Content = post.Content,
         CreatedAtUtc = post.CreatedAtUtc,
         IsHidden = post.IsHidden,
