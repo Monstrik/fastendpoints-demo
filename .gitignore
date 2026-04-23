@@ -6,6 +6,7 @@ obj/
 *.db
 *.db-shm
 *.db-wal
+!backend/db/app.db
 
 # User-specific files
 *.user
