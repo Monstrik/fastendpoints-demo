@@ -33,9 +33,9 @@ This is the backend for the MyWebApp project, built with .NET 8 and utilizing [F
    ```
 2. Run the application:
    ```bash
-   dotnet run
+   dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
    ```
-   The API will be available at `http://localhost:5000` (or the port specified in `Properties/launchSettings.json`).
+   The API will be available at `http://localhost:5116` (or the port specified in `Properties/launchSettings.json`).
 
 ### Database Initialization
 
