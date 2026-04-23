@@ -2,7 +2,6 @@ using System.Text;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var bld = WebApplication.CreateBuilder();
@@ -29,7 +28,6 @@ bld.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -60,29 +58,6 @@ static void SeedAdminUser(IServiceProvider services)
 
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
-    db.Database.ExecuteSqlRaw(
-        """
-        CREATE TABLE IF NOT EXISTS Posts (
-            Id TEXT NOT NULL PRIMARY KEY,
-            AuthorId TEXT NOT NULL,
-            AuthorLogin TEXT NOT NULL,
-            Content TEXT NOT NULL,
-            CreatedAtUtc TEXT NOT NULL,
-            IsHidden INTEGER NOT NULL DEFAULT 0
-        );
-        """);
-    db.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_Posts_CreatedAtUtc ON Posts (CreatedAtUtc);");
-    db.Database.ExecuteSqlRaw(
-        """
-        CREATE TABLE IF NOT EXISTS PostReactions (
-            Id TEXT NOT NULL PRIMARY KEY,
-            PostId TEXT NOT NULL,
-            UserId TEXT NOT NULL,
-            Reaction INTEGER NOT NULL
-        );
-        """);
-    db.Database.ExecuteSqlRaw("CREATE UNIQUE INDEX IF NOT EXISTS IX_PostReactions_PostId_UserId ON PostReactions (PostId, UserId);");
-    db.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_PostReactions_PostId ON PostReactions (PostId);");
 
     var store = scope.ServiceProvider.GetRequiredService<IUserStore>();
 
