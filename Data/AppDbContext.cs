@@ -4,6 +4,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<PostEntity> Posts => Set<PostEntity>();
+    public DbSet<PostReactionEntity> PostReactions => Set<PostReactionEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +24,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(p => p.CreatedAtUtc);
             e.Property(p => p.AuthorLogin).HasMaxLength(100);
             e.Property(p => p.Content).HasMaxLength(280);
+        });
+
+        modelBuilder.Entity<PostReactionEntity>(e =>
+        {
+            e.HasKey(r => r.Id);
+            e.HasIndex(r => new { r.PostId, r.UserId }).IsUnique();
+            e.Property(r => r.Reaction).HasConversion<int>();
         });
     }
 }
@@ -73,5 +81,13 @@ public class PostEntity
         CreatedAtUtc = post.CreatedAtUtc,
         IsHidden = post.IsHidden
     };
+}
+
+public class PostReactionEntity
+{
+    public Guid Id { get; set; }
+    public Guid PostId { get; set; }
+    public Guid UserId { get; set; }
+    public PostReactionType Reaction { get; set; }
 }
 

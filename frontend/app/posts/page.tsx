@@ -4,7 +4,12 @@ import type { MyPost, PublicPost } from "@/lib/types";
 import { PostsFeedClient } from "@/app/posts/posts-feed-client";
 
 async function loadPosts(): Promise<{ posts: PublicPost[]; error: string | null }> {
-  const response = await backendFetch("/api/public/posts", { method: "GET" });
+  const token = getAuthToken();
+
+  const response = await backendFetch("/api/public/posts", {
+    method: "GET",
+    token
+  });
 
   if (!response.ok) {
     return {
@@ -59,7 +64,7 @@ export default async function PostsPage() {
     <section>
       <h1>{isAdmin ? "All Posts" : "Public Posts"}</h1>
       {error ? <p style={{ color: "red" }}>{error}</p> : null}
-      <PostsFeedClient initialPosts={posts} canModerate={isAdmin} />
+      <PostsFeedClient initialPosts={posts} canModerate={isAdmin} canReact={!!user} />
     </section>
   );
 }

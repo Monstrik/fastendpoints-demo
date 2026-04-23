@@ -389,6 +389,38 @@ td {
   word-break: break-word;
 }
 
+.post-card-reactions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.reaction-button {
+  background: transparent;
+  border: 1px solid var(--muted-border);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.reaction-button:hover {
+  border-color: var(--link);
+  color: var(--link);
+}
+
+.reaction-button.is-active {
+  border-color: var(--link);
+  color: var(--link);
+}
+
+.reaction-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 .post-card-visibility {
   display: inline-flex;
   align-items: center;

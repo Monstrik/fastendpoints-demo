@@ -2,6 +2,9 @@ import type { MyPost, PublicPost } from "@/lib/types";
 
 type Props = {
   post: PublicPost | MyPost;
+  canReact?: boolean;
+  isReacting?: boolean;
+  onReact?: (post: PublicPost | MyPost, reaction: "Like" | "Dislike") => void;
   canModerate?: boolean;
   isSubmitting?: boolean;
   onToggleVisibility?: (post: MyPost) => void;
@@ -19,7 +22,15 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-export function PostCard({ post, canModerate = false, isSubmitting = false, onToggleVisibility }: Props) {
+export function PostCard({
+  post,
+  canReact = false,
+  isReacting = false,
+  onReact,
+  canModerate = false,
+  isSubmitting = false,
+  onToggleVisibility
+}: Props) {
   const visibility = "isHidden" in post ? (post.isHidden ? "Hidden" : "Public") : null;
   const canToggle = canModerate && "isHidden" in post && !!onToggleVisibility;
 
@@ -54,6 +65,24 @@ export function PostCard({ post, canModerate = false, isSubmitting = false, onTo
         ) : null}
       </div>
       <p className="post-card-content">{post.content}</p>
+      <div className="post-card-reactions">
+        <button
+          type="button"
+          className={`reaction-button ${post.viewerReaction === "Like" ? "is-active" : ""}`}
+          onClick={() => onReact?.(post, "Like")}
+          disabled={!canReact || isReacting}
+        >
+          Like {post.likesCount}
+        </button>
+        <button
+          type="button"
+          className={`reaction-button ${post.viewerReaction === "Dislike" ? "is-active" : ""}`}
+          onClick={() => onReact?.(post, "Dislike")}
+          disabled={!canReact || isReacting}
+        >
+          Dislike {post.dislikesCount}
+        </button>
+      </div>
     </article>
   );
 }

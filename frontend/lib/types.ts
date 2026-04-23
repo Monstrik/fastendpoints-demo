@@ -27,6 +27,9 @@ export type PublicPost = {
   authorLogin: string;
   content: string;
   createdAtUtc: string;
+  likesCount: number;
+  dislikesCount: number;
+  viewerReaction: "Like" | "Dislike" | null;
 };
 
 export type MyPost = {
@@ -35,5 +38,8 @@ export type MyPost = {
   content: string;
   createdAtUtc: string;
   isHidden: boolean;
+  likesCount: number;
+  dislikesCount: number;
+  viewerReaction: "Like" | "Dislike" | null;
 };
 

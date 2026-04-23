@@ -181,6 +181,53 @@ public class PostEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         Assert.DoesNotContain(myPosts!, p => p.AuthorLogin == otherLogin);
     }
 
+    [Fact]
+    public async Task User_CanLikeAndDislikePost_AndPublicCountsUpdate()
+    {
+        var adminToken = await LoginAndGetToken("admin", "Admin123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var postContent = $"react-{Guid.NewGuid():N}";
+        var createResponse = await _client.PostAsJsonAsync("/api/posts", new CreatePostRequest { Content = postContent });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var created = await createResponse.Content.ReadFromJsonAsync<PublicPostResponse>();
+        Assert.NotNull(created);
+
+        var login = $"react-user-{Guid.NewGuid():N}";
+        _ = await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
+        {
+            Login = login,
+            Password = "User123!",
+            FirstName = "React",
+            LastName = "User",
+            Role = UserRole.User
+        });
+
+        var userToken = await LoginAndGetToken(login, "User123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+
+        var likeResponse = await _client.PutAsJsonAsync($"/api/posts/{created!.Id}/reaction", new { reaction = "like" });
+        Assert.Equal(HttpStatusCode.OK, likeResponse.StatusCode);
+
+        var dislikeResponse = await _client.PutAsJsonAsync($"/api/posts/{created.Id}/reaction", new { reaction = "dislike" });
+        Assert.Equal(HttpStatusCode.OK, dislikeResponse.StatusCode);
+
+        var clearResponse = await _client.DeleteAsync($"/api/posts/{created.Id}/reaction");
+        Assert.Equal(HttpStatusCode.OK, clearResponse.StatusCode);
+
+        _client.DefaultRequestHeaders.Authorization = null;
+        var publicList = await _client.GetAsync("/api/public/posts");
+        Assert.Equal(HttpStatusCode.OK, publicList.StatusCode);
+
+        var posts = await publicList.Content.ReadFromJsonAsync<List<PublicPostResponse>>();
+        Assert.NotNull(posts);
+
+        var post = posts!.First(p => p.Id == created.Id);
+        Assert.Equal(0, post.LikesCount);
+        Assert.Equal(0, post.DislikesCount);
+    }
+
     private async Task<string> LoginAndGetToken(string login, string password)
     {
         _client.DefaultRequestHeaders.Authorization = null;

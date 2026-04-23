@@ -72,6 +72,17 @@ static void SeedAdminUser(IServiceProvider services)
         );
         """);
     db.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_Posts_CreatedAtUtc ON Posts (CreatedAtUtc);");
+    db.Database.ExecuteSqlRaw(
+        """
+        CREATE TABLE IF NOT EXISTS PostReactions (
+            Id TEXT NOT NULL PRIMARY KEY,
+            PostId TEXT NOT NULL,
+            UserId TEXT NOT NULL,
+            Reaction INTEGER NOT NULL
+        );
+        """);
+    db.Database.ExecuteSqlRaw("CREATE UNIQUE INDEX IF NOT EXISTS IX_PostReactions_PostId_UserId ON PostReactions (PostId, UserId);");
+    db.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_PostReactions_PostId ON PostReactions (PostId);");
 
     var store = scope.ServiceProvider.GetRequiredService<IUserStore>();
 
