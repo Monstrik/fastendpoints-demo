@@ -17,69 +17,54 @@ The main idea is to demonstrate practical API patterns end-to-end:
 
 ```text
 .
-|- backend/
-|  |- src/MyWebAppFastEndpoints/   # API project
-|  |- tests/                       # xUnit tests
-|  |- db/app.db                    # Local demo database (tracked)
-|- frontend/
-|  |- app/                         # Next.js routes/pages
-|  |- lib/                         # API/auth helpers
+|- backend/              # See backend/README.md
+|  |- src/MyWebAppFastEndpoints/
+|  |- tests/
+|  |- db/app.db
+|- frontend/             # See frontend/README.md
+|  |- app/
+|  |- lib/
 ```
 
 ## Quick Start
 
-### 1) Start the backend
+**Prerequisites:** [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0), [pnpm](https://pnpm.io/)
 
-```bash
-cd backend
-dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
-```
+1. **Start the backend:**
+   ```bash
+   cd backend
+   dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
+   ```
+   Runs on `http://localhost:5116` by default.
 
-Backend runs on `http://localhost:5116` by default (or your launch profile port).
-
-### 2) Start the frontend
-
-```bash
-cd frontend
-cp .env.example .env.local
-pnpm install
-pnpm run dev
-```
-
-Open the frontend URL shown by Next.js (commonly `http://localhost:3000`).
+2. **Start the frontend:**
+   ```bash
+   cd frontend
+   cp .env.example .env.local
+   pnpm install
+   pnpm run dev
+   ```
+   Runs on `http://localhost:3000` by default.
 
 ## Demo Flow (What to Show)
 
-1. Login with seeded admin user:
-   - `admin` / `Admin123!`
+1. Login with seeded admin user: `admin` / `Admin123!`
 2. Create a regular user from admin flows.
 3. Login as that user and create a post.
 4. View public posts, then like/dislike a post.
 5. Return as admin and hide/unhide a post.
 6. Verify role-protected behavior (`/api/admin/*`, `/api/me/*`, public endpoints).
 
-## Useful Commands
-
-### Backend tests
+## Running Tests
 
 ```bash
-cd backend
-dotnet test MyWebAppFastEndpoints.sln
+cd backend && dotnet test MyWebAppFastEndpoints.sln
+cd frontend && pnpm run test
 ```
 
-### Frontend tests
+## More Details
 
-```bash
-cd frontend
-pnpm run test
-```
-
-## Notes
-
-- Backend database is under `backend/db/app.db`.
-- Git is configured to track only `backend/db/app.db` (not SQLite sidecar files).
-- More details:
-  - `backend/README.md`
-  - `backend/TESTING.md`
-  - `frontend/README.md`
-
+- **Backend:** See `backend/README.md` for architecture, features, and API endpoints.
+- **Backend Testing:** See `backend/TESTING.md` for coverage and advanced test setup.
+- **Frontend:** See `frontend/README.md` for routes and API integration.
+- **Database:** Tracked at `backend/db/app.db`; SQLite sidecars (`*.db-shm`, `*.db-wal`) are ignored.

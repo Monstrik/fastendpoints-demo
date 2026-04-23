@@ -1,46 +1,53 @@
 # Frontend (Next.js App Router)
 
-Minimal frontend for auth + dashboard + admin user management, backed by existing API.
+This is the web UI for the FastEndpoints demo app.
 
-## Pages
+It provides auth, profile/status, posts, and admin pages. All backend communication happens via Next.js route handlers under `app/api/*` which proxy to the FastEndpoints API.
 
-- `/` redirects to `/login` or `/dashboard` based on server-side auth check.
+## Main Routes
+
+- `/` redirects to `/login` or `/dashboard` based on auth state.
 - `/login` login form.
 - `/forgot-password` forgot-password form.
-- `/dashboard` protected page for authenticated users.
-- `/admin/users` protected page for admin users only.
+- `/dashboard` authenticated user dashboard.
+- `/posts` public and admin posts view.
+- `/user` authenticated user profile/status page.
+- `/users` public user status list.
+- `/admin/users` admin-only user management page.
 
-## Backend API used
+## API Integration
 
-- `POST /auth/login`
-- `POST /auth/forgot-password`
-- `GET /auth/me`
-- `GET /admin/users`
-- `POST /admin/users`
-- `DELETE /admin/users/:id`
+Frontend calls internal routes like `/api/auth/login` and `/api/admin/users`.
+Those handlers proxy to the backend FastEndpoints API (e.g., `/api/auth/login`, `/api/users`, `/api/public/posts`, `/api/me`, `/api/me/status`).
 
-## Setup
+`BACKEND_URL` environment variable controls the backend base URL (defaults to `http://localhost:5116` in `lib/api.ts`).
 
-1. Copy `.env.example` to `.env.local`.
-2. Set `BACKEND_URL` to your API base URL.
-3. Install dependencies and start dev server.
+## Setup & Running
+
+See the root `README.md` for full quick start instructions.
+
+Quick reference:
 
 ```bash
 cd frontend
-w pnpm install
+cp .env.example .env.local
+pnpm install
 pnpm run dev
 ```
 
-## Type Check
+**Prerequisites:** Backend must be running (see `backend/README.md`).
+
+## Useful Commands
 
 ```bash
-cd frontend
-pnpm run typecheck
+pnpm run typecheck      # TypeScript type checking
+pnpm run test           # Run tests once
+pnpm run test:watch     # Watch mode
+pnpm run test:coverage  # Coverage report
 ```
 
-## Notes
+## Implementation Notes
 
 - Auth token is stored in an HTTP-only cookie (`auth_token`).
-- Server components enforce redirects for auth and role checks using `redirect()`.
-- Forms and user table are client components.
-
+- Server-side auth/role checks are enforced in app routes with redirects.
+- `app/api/*` route handlers centralize backend communication and token forwarding.

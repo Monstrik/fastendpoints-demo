@@ -1,10 +1,10 @@
 # Backend - MyWebAppFastEndpoints
 
-This is the backend for the MyWebApp project, built with .NET 8 and utilizing [FastEndpoints](https://fast-endpoints.com/) for a clean and efficient API design.
+This is the FastEndpoints API for the MyWebApp demo project, built with .NET 8.
 
 ## Features
 
-- **User Management**: Registration, Login, and Profile management.
+- **User Management**: Registration, login, and profile management.
 - **Post Management**: Creating, viewing, and managing posts.
 - **Reactions**: Like and dislike functionality on posts.
 - **Security**: JWT-based authentication and PBKDF2-SHA256 password hashing.
@@ -19,46 +19,50 @@ This is the backend for the MyWebApp project, built with .NET 8 and utilizing [F
 - **Authentication**: JWT Bearer
 - **Testing**: xUnit, EF Core InMemory, WebApplicationFactory
 
-## Getting Started
+## Running the API
 
 ### Prerequisites
 
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
-### Running the Application
+### Start the server
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Run the API:
-   ```bash
-   dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
-   ```
-   The API will be available at `http://localhost:5116` (or the port specified in `Properties/launchSettings.json`).
+From the repository root:
 
-### Database Initialization
+```bash
+cd backend
+dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
+```
 
-The application automatically creates the SQLite database at `db/app.db` and seeds an initial admin user on the first run.
+The API runs on `http://localhost:5116` (or the port in `Properties/launchSettings.json`).
 
-**Default Admin Credentials:**
-- **Username:** `admin`
+## Database
+
+On first run, the application creates the SQLite database at `db/app.db` and seeds a default admin user.
+
+**Seeded Credentials:**
+- **Login:** `admin`
 - **Password:** `Admin123!`
 
 ## Project Structure
 
-- `src/MyWebAppFastEndpoints/` - Main API project.
-  - `Data/` - Database context and repository implementations (EF Core).
-  - `Users/` - User-related logic (contracts, endpoints, stores).
-  - `Posts/` - Post-related logic, endpoints, and storage interfaces.
-  - `Startup/` - Service registration and app initialization extensions.
+- `src/MyWebAppFastEndpoints/`
+  - `Data/` - EF Core context and repository implementations.
+  - `Users/` - User endpoints, contracts, and domain logic.
+  - `Posts/` - Post endpoints, contracts, and domain logic.
+  - `Startup/` - Service registration and middleware setup.
 - `tests/` - Unit and integration tests.
 
 ## Testing
 
-For detailed information on running tests and generating coverage reports, see [TESTING.md](./TESTING.md).
+For detailed test setup and coverage reports, see [TESTING.md](./TESTING.md).
 
 ```bash
-# From backend/
+cd backend
 dotnet test MyWebAppFastEndpoints.sln
 ```
+
+## Frontend Integration
+
+The frontend (`../frontend/`) communicates with this API via Next.js route handlers.
+See `frontend/README.md` for details.
