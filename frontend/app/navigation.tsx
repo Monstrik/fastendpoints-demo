@@ -29,21 +29,29 @@ export function Navigation() {
 
   useEffect(() => {
     const fetchUser = async () => {
+      setLoading(true);
       try {
-        const response = await fetch("/api/me");
+        const response = await fetch("/api/me", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store"
+        });
         if (response.ok) {
           const currentUser = await response.json();
           setUser(currentUser);
+        } else {
+          setUser(null);
         }
       } catch (error) {
         console.error("Failed to fetch user:", error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [pathname]);
 
   // Close menu when clicking outside
   useEffect(() => {
