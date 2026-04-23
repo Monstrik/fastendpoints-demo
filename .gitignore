@@ -21,6 +21,11 @@ obj/
 # macOS
 .DS_Store
 
+# Test coverage
+coverage-report/
+TestResults/
+**/coverage.cobertura.xml
+
 # Next.js frontend
 frontend/node_modules/
 frontend/.next/
