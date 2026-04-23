@@ -1,3 +1,5 @@
+"use client";
+
 import type { MyPost, PublicPost } from "@/lib/types";
 
 type Props = {
