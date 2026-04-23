@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using FastEndpoints;
+using MyWebAppFastEndpoints.Shared;
 
 public sealed class ListAllPostsEndpoint(IPostStore posts) : EndpointWithoutRequest<List<MyPostResponse>>
 {
@@ -11,13 +12,9 @@ public sealed class ListAllPostsEndpoint(IPostStore posts) : EndpointWithoutRequ
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        Guid? viewerId = null;
-        var idRaw = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (Guid.TryParse(idRaw, out var id))
-            viewerId = id;
+        var viewerId = User.GetUserId();
 
         var response = posts.GetAll(viewerId).Select(MyPostResponse.From).ToList();
         await Send.OkAsync(response, ct);
     }
 }
-

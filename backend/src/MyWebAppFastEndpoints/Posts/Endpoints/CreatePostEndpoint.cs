@@ -1,10 +1,12 @@
 using System.Security.Claims;
 using FastEndpoints;
+using MyWebAppFastEndpoints.Shared;
 
+/// <summary>
+/// Creates a new post with validation for content length and author authentication.
+/// </summary>
 public sealed class CreatePostEndpoint(IUserStore users, IPostStore posts) : Endpoint<CreatePostRequest, PublicPostResponse>
 {
-    private const int MaxContentLength = 280;
-
     public override void Configure()
     {
         Post("/api/posts");
@@ -22,21 +24,21 @@ public sealed class CreatePostEndpoint(IUserStore users, IPostStore posts) : End
             return;
         }
 
-        if (content.Length > MaxContentLength)
+        if (content.Length > AppConstants.PostMaxContentLength)
         {
-            AddError(r => r.Content, $"Post content must be {MaxContentLength} characters or less.");
+            AddError(r => r.Content, $"Post content must be {AppConstants.PostMaxContentLength} characters or less.");
             await Send.ErrorsAsync(cancellation: ct);
             return;
         }
 
-        var idRaw = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!Guid.TryParse(idRaw, out var id))
+        var userId = User.GetUserId();
+        if (userId is null)
         {
             await Send.UnauthorizedAsync(ct);
             return;
         }
 
-        var author = users.GetById(id);
+        var author = users.GetById(userId.Value);
         if (author is null)
         {
             await Send.UnauthorizedAsync(ct);
@@ -47,4 +49,3 @@ public sealed class CreatePostEndpoint(IUserStore users, IPostStore posts) : End
         await Send.CreatedAtAsync<ListPublicPostsEndpoint>(new { }, PublicPostResponse.From(created), cancellation: ct);
     }
 }
-

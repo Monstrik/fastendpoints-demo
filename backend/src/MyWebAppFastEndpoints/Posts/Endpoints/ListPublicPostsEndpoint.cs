@@ -1,6 +1,10 @@
 using System.Security.Claims;
 using FastEndpoints;
+using MyWebAppFastEndpoints.Shared;
 
+/// <summary>
+/// Retrieves public posts, optionally filtered by the authenticated viewer's perspective.
+/// </summary>
 public sealed class ListPublicPostsEndpoint(IPostStore posts) : EndpointWithoutRequest<List<PublicPostResponse>>
 {
     public override void Configure()
@@ -11,13 +15,9 @@ public sealed class ListPublicPostsEndpoint(IPostStore posts) : EndpointWithoutR
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        Guid? viewerId = null;
-        var idRaw = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (Guid.TryParse(idRaw, out var id))
-            viewerId = id;
+        var viewerId = User.GetUserId();
 
         var response = posts.GetPublic(viewerId).Select(PublicPostResponse.From).ToList();
         await Send.OkAsync(response, ct);
     }
 }
-

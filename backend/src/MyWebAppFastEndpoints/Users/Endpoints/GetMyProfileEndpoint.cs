@@ -1,6 +1,10 @@
 using System.Security.Claims;
 using FastEndpoints;
+using MyWebAppFastEndpoints.Shared;
 
+/// <summary>
+/// Retrieves the authenticated user's profile information.
+/// </summary>
 public sealed class GetMyProfileEndpoint(IUserStore store) : EndpointWithoutRequest<UserResponse>
 {
     public override void Configure()
@@ -11,14 +15,14 @@ public sealed class GetMyProfileEndpoint(IUserStore store) : EndpointWithoutRequ
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var idRaw = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!Guid.TryParse(idRaw, out var id))
+        var userId = User.GetUserId();
+        if (userId is null)
         {
             await Send.UnauthorizedAsync(ct);
             return;
         }
 
-        var user = store.GetById(id);
+        var user = store.GetById(userId.Value);
         if (user is null)
         {
             await Send.UnauthorizedAsync(ct);
@@ -28,4 +32,3 @@ public sealed class GetMyProfileEndpoint(IUserStore store) : EndpointWithoutRequ
         await Send.OkAsync(UserResponse.From(user), ct);
     }
 }
-

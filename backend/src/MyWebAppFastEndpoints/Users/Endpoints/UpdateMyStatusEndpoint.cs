@@ -1,6 +1,10 @@
 using System.Security.Claims;
 using FastEndpoints;
+using MyWebAppFastEndpoints.Shared;
 
+/// <summary>
+/// Updates the authenticated user's status to a valid predefined value.
+/// </summary>
 public sealed class UpdateMyStatusEndpoint(IUserStore store) : Endpoint<UpdateMyStatusRequest, UserResponse>
 {
     public override void Configure()
@@ -18,14 +22,14 @@ public sealed class UpdateMyStatusEndpoint(IUserStore store) : Endpoint<UpdateMy
             return;
         }
 
-        var idRaw = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!Guid.TryParse(idRaw, out var id))
+        var userId = User.GetUserId();
+        if (userId is null)
         {
             await Send.UnauthorizedAsync(ct);
             return;
         }
 
-        var current = store.GetById(id);
+        var current = store.GetById(userId.Value);
         if (current is null)
         {
             await Send.UnauthorizedAsync(ct);
@@ -50,4 +54,3 @@ public sealed class UpdateMyStatusEndpoint(IUserStore store) : Endpoint<UpdateMy
         await Send.OkAsync(UserResponse.From(updated), ct);
     }
 }
-
