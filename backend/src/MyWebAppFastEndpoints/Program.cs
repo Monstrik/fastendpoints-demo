@@ -2,7 +2,7 @@ var bld = WebApplication.CreateBuilder();
 
 bld.Services
     .AddApplicationServices()
-    .AddPersistence(bld.Configuration)
+    .AddPersistence(bld.Configuration, bld.Environment)
     .AddJwtAuthentication(bld.Configuration);
 
 var app = bld.Build();

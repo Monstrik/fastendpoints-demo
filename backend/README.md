@@ -39,7 +39,7 @@ This is the backend for the MyWebApp project, built with .NET 8 and utilizing [F
 
 ### Database Initialization
 
-The application automatically creates the SQLite database (`app.db`) and seeds an initial admin user on the first run.
+The application automatically creates the SQLite database at `db/app.db` and seeds an initial admin user on the first run.
 
 **Default Admin Credentials:**
 - **Username:** `admin`

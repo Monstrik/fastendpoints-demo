@@ -1,9 +1,11 @@
 using System.Text;
 using FastEndpoints;
+using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 public static class ServiceRegistrationExtensions
@@ -15,10 +17,23 @@ public static class ServiceRegistrationExtensions
         return services;
     }
 
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
+        var backendRoot = Path.GetFullPath(Path.Combine(environment.ContentRootPath, "..", ".."));
+        var defaultConnectionString = configuration.GetConnectionString("Default") ?? "Data Source=db/app.db";
+        var connectionStringBuilder = new SqliteConnectionStringBuilder(defaultConnectionString);
+
+        if (string.IsNullOrWhiteSpace(connectionStringBuilder.DataSource))
+            connectionStringBuilder.DataSource = Path.Combine(backendRoot, "db", "app.db");
+        else if (!Path.IsPathRooted(connectionStringBuilder.DataSource))
+            connectionStringBuilder.DataSource = Path.GetFullPath(Path.Combine(backendRoot, connectionStringBuilder.DataSource));
+
+        var databaseDirectory = Path.GetDirectoryName(connectionStringBuilder.DataSource);
+        if (!string.IsNullOrWhiteSpace(databaseDirectory))
+            Directory.CreateDirectory(databaseDirectory);
+
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(configuration.GetConnectionString("Default") ?? "Data Source=app.db"));
+            options.UseSqlite(connectionStringBuilder.ConnectionString));
 
         services.AddScoped<IUserStore, EfUserStore>();
         services.AddScoped<IPostStore, EfPostStore>();
