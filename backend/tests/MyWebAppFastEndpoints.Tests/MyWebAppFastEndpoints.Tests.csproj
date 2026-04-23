@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../MyWebAppFastEndpoints.csproj" />
+    <ProjectReference Include="../../src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj" />
   </ItemGroup>
 </Project>
 

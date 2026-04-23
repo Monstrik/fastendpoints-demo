@@ -6,6 +6,7 @@ obj/
 *.db
 *.db-shm
 *.db-wal
+!backend/db/app.db
 
 # User-specific files
 *.user
@@ -22,9 +23,9 @@ obj/
 .DS_Store
 
 # Test coverage
-coverage-report/
-TestResults/
-**/coverage.cobertura.xml
+backend/coverage-report/
+backend/**/TestResults/
+backend/**/coverage.cobertura.xml
 
 # Next.js frontend
 frontend/node_modules/
@@ -32,4 +33,3 @@ frontend/.next/
 frontend/.env.local
 frontend/tsconfig.tsbuildinfo
 frontend/coverage/
-

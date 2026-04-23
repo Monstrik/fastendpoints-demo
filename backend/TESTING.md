@@ -4,17 +4,17 @@
 
 ```bash
 # Run all tests
-dotnet test
+dotnet test backend/MyWebAppFastEndpoints.sln
 
 # Run with coverage (requires coverlet.collector)
-dotnet test --collect:"XPlat Code Coverage"
+dotnet test backend/MyWebAppFastEndpoints.sln --collect:"XPlat Code Coverage"
 
 # Generate HTML report (requires reportgenerator tool)
 dotnet tool install -g dotnet-reportgenerator-globaltool
-reportgenerator -reports:"tests/**/TestResults/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:Html
+reportgenerator -reports:"backend/**/TestResults/**/coverage.cobertura.xml" -targetdir:"backend/coverage-report" -reporttypes:Html
 
 # Open report
-open coverage-report/index.html
+open backend/coverage-report/index.html
 ```
 
 ## Coverage
