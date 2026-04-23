@@ -4,6 +4,7 @@ using MyWebAppFastEndpoints.Shared;
 
 /// <summary>
 /// Creates a new post with validation for content length and author authentication.
+/// Validation is handled by FastEndpoints validator (CreatePostRequestValidator).
 /// </summary>
 public sealed class CreatePostEndpoint(IUserStore users, IPostStore posts) : Endpoint<CreatePostRequest, PublicPostResponse>
 {
@@ -15,21 +16,7 @@ public sealed class CreatePostEndpoint(IUserStore users, IPostStore posts) : End
 
     public override async Task HandleAsync(CreatePostRequest req, CancellationToken ct)
     {
-        var content = req.Content?.Trim() ?? string.Empty;
-
-        if (string.IsNullOrWhiteSpace(content))
-        {
-            AddError(r => r.Content, "Post content is required.");
-            await Send.ErrorsAsync(cancellation: ct);
-            return;
-        }
-
-        if (content.Length > AppConstants.PostMaxContentLength)
-        {
-            AddError(r => r.Content, $"Post content must be {AppConstants.PostMaxContentLength} characters or less.");
-            await Send.ErrorsAsync(cancellation: ct);
-            return;
-        }
+        var content = req.Content.Trim();
 
         var userId = User.GetUserId();
         if (userId is null)

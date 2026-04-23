@@ -4,6 +4,7 @@ using MyWebAppFastEndpoints.Shared;
 
 /// <summary>
 /// Sets a reaction (like or dislike) on a post by the authenticated user.
+/// Validation is handled by FastEndpoints validator (PostReactionRequestValidator).
 /// </summary>
 public sealed class SetPostReactionEndpoint(IPostStore posts) : Endpoint<PostReactionRequest, PublicPostResponse>
 {
@@ -23,13 +24,6 @@ public sealed class SetPostReactionEndpoint(IPostStore posts) : Endpoint<PostRea
             _ => (PostReactionType?)null
         };
 
-        if (reaction is null)
-        {
-            AddError(r => r.Reaction, $"Reaction must be either '{AppConstants.Reactions.Like}' or '{AppConstants.Reactions.Dislike}'.");
-            await Send.ErrorsAsync(cancellation: ct);
-            return;
-        }
-
         var userId = User.GetUserId();
         if (userId is null)
         {
@@ -37,7 +31,7 @@ public sealed class SetPostReactionEndpoint(IPostStore posts) : Endpoint<PostRea
             return;
         }
 
-        var updated = posts.SetReaction(req.Id, userId.Value, reaction.Value);
+        var updated = posts.SetReaction(req.Id, userId.Value, reaction!.Value);
         if (updated is null)
         {
             await Send.NotFoundAsync(ct);

@@ -4,6 +4,7 @@ using MyWebAppFastEndpoints.Shared;
 
 /// <summary>
 /// Updates the authenticated user's status to a valid predefined value.
+/// Validation is handled by FastEndpoints validator (UpdateMyStatusRequestValidator).
 /// </summary>
 public sealed class UpdateMyStatusEndpoint(IUserStore store) : Endpoint<UpdateMyStatusRequest, UserResponse>
 {
@@ -15,13 +16,6 @@ public sealed class UpdateMyStatusEndpoint(IUserStore store) : Endpoint<UpdateMy
 
     public override async Task HandleAsync(UpdateMyStatusRequest req, CancellationToken ct)
     {
-        if (!UserStatuses.Allowed.Contains(req.Status))
-        {
-            AddError(r => r.Status, "Status is not allowed.");
-            await Send.ErrorsAsync(cancellation: ct);
-            return;
-        }
-
         var userId = User.GetUserId();
         if (userId is null)
         {
