@@ -22,6 +22,14 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
+function formatPostDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+}
+
 export function PostCard({
   post,
   canReact = false,
@@ -42,9 +50,10 @@ export function PostCard({
         </span>
         <div className="post-card-meta">
           <span className="post-card-author">@{post.authorLogin}</span>
-          <span className="post-card-time" title={new Date(post.createdAtUtc).toLocaleString()}>
-            {timeAgo(post.createdAtUtc)}
-          </span>
+          <div className="post-card-timestamps" title={new Date(post.createdAtUtc).toLocaleString()}>
+            <span className="post-card-time">{timeAgo(post.createdAtUtc)}</span>
+            <span className="post-card-date">{formatPostDate(post.createdAtUtc)}</span>
+          </div>
         </div>
         {visibility ? (
           canToggle ? (
