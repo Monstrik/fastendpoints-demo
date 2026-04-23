@@ -11,7 +11,7 @@ dotnet test --collect:"XPlat Code Coverage"
 
 # Generate HTML report (requires reportgenerator tool)
 dotnet tool install -g dotnet-reportgenerator-globaltool
-reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:Html
+reportgenerator -reports:"tests/**/TestResults/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:Html
 
 # Open report
 open coverage-report/index.html

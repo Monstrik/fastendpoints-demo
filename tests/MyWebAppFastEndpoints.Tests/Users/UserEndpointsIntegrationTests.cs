@@ -136,6 +136,142 @@ public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         Assert.Contains(users!, u => !string.IsNullOrWhiteSpace(u.Status));
     }
 
+    [Fact]
+    public async Task Admin_CanListUsers()
+    {
+        var adminToken = await LoginAndGetToken("admin", "Admin123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var response = await _client.GetAsync("/api/users");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var users = await response.Content.ReadFromJsonAsync<List<UserResponse>>();
+        Assert.NotNull(users);
+        Assert.Contains(users!, u => u.Login == "admin");
+    }
+
+    [Fact]
+    public async Task Admin_CanUpdateUser()
+    {
+        var adminToken = await LoginAndGetToken("admin", "Admin123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var login = $"update-me-{Guid.NewGuid():N}";
+        var createResponse = await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
+        {
+            Login = login,
+            Password = "User123!",
+            FirstName = "Before",
+            LastName = "Update",
+            Role = UserRole.User
+        });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var created = await createResponse.Content.ReadFromJsonAsync<UserResponse>();
+        Assert.NotNull(created);
+
+        var updateResponse = await _client.PutAsJsonAsync($"/api/users/{created!.Id}", new UpdateUserRequest
+        {
+            Id = created.Id,
+            Login = login,
+            FirstName = "After",
+            LastName = "Update",
+            Role = UserRole.User
+        });
+        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+
+        var updated = await updateResponse.Content.ReadFromJsonAsync<UserResponse>();
+        Assert.NotNull(updated);
+        Assert.Equal("After", updated!.FirstName);
+        Assert.Equal("After Update", updated.FullName);
+    }
+
+    [Fact]
+    public async Task Admin_CanDeleteUser()
+    {
+        var adminToken = await LoginAndGetToken("admin", "Admin123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var login = $"delete-me-{Guid.NewGuid():N}";
+        var createResponse = await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
+        {
+            Login = login,
+            Password = "User123!",
+            FirstName = "To",
+            LastName = "Delete",
+            Role = UserRole.User
+        });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var created = await createResponse.Content.ReadFromJsonAsync<UserResponse>();
+        Assert.NotNull(created);
+
+        var deleteResponse = await _client.DeleteAsync($"/api/users/{created!.Id}");
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+
+        var getResponse = await _client.GetAsync($"/api/users/{created.Id}");
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Admin_DeleteNonExistentUser_ReturnsNotFound()
+    {
+        var adminToken = await LoginAndGetToken("admin", "Admin123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var deleteResponse = await _client.DeleteAsync($"/api/users/{Guid.NewGuid()}");
+        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Admin_CreateUser_WhenLoginExists_ReturnsError()
+    {
+        var adminToken = await LoginAndGetToken("admin", "Admin123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var login = $"duplicate-{Guid.NewGuid():N}";
+        await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
+        {
+            Login = login, Password = "User123!", FirstName = "First", LastName = "User", Role = UserRole.User
+        });
+
+        var duplicate = await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
+        {
+            Login = login, Password = "User123!", FirstName = "Second", LastName = "User", Role = UserRole.User
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, duplicate.StatusCode);
+    }
+
+    [Fact]
+    public async Task Anonymous_ForgotPassword_AlwaysReturnsOk()
+    {
+        _client.DefaultRequestHeaders.Authorization = null;
+
+        var existingResponse = await _client.PostAsJsonAsync("/api/auth/forgot-password", new { login = "admin" });
+        Assert.Equal(HttpStatusCode.OK, existingResponse.StatusCode);
+
+        var nonExistingResponse = await _client.PostAsJsonAsync("/api/auth/forgot-password", new { login = "doesnotexist" });
+        Assert.Equal(HttpStatusCode.OK, nonExistingResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdateMyStatus_InvalidStatus_ReturnsBadRequest()
+    {
+        var adminToken = await LoginAndGetToken("admin", "Admin123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var login = $"bad-status-{Guid.NewGuid():N}";
+        await _client.PostAsJsonAsync("/api/users", new CreateUserRequest
+        {
+            Login = login, Password = "User123!", FirstName = "Bad", LastName = "Status", Role = UserRole.User
+        });
+
+        var userToken = await LoginAndGetToken(login, "User123!");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+
+        var response = await _client.PutAsJsonAsync("/api/me/status", new { status = "not a valid status" });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     private async Task<string> LoginAndGetToken(string login, string password)
     {
         _client.DefaultRequestHeaders.Authorization = null;
