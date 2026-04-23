@@ -1,7 +1,7 @@
-import type { PublicPost } from "@/lib/types";
+import type { MyPost, PublicPost } from "@/lib/types";
 
 type Props = {
-  post: PublicPost;
+  post: PublicPost | MyPost;
 };
 
 function timeAgo(dateStr: string): string {
@@ -17,6 +17,8 @@ function timeAgo(dateStr: string): string {
 }
 
 export function PostCard({ post }: Props) {
+  const visibility = "isHidden" in post ? (post.isHidden ? "Hidden" : "Public") : null;
+
   return (
     <article className="post-card">
       <div className="post-card-header">
@@ -29,6 +31,11 @@ export function PostCard({ post }: Props) {
             {timeAgo(post.createdAtUtc)}
           </span>
         </div>
+        {visibility ? (
+          <span className={`post-card-visibility ${visibility === "Hidden" ? "is-hidden" : "is-public"}`}>
+            {visibility}
+          </span>
+        ) : null}
       </div>
       <p className="post-card-content">{post.content}</p>
     </article>

@@ -365,6 +365,7 @@ td {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
 }
 
 .post-card-author {
@@ -386,5 +387,33 @@ td {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.post-card-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.post-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.post-card-visibility {
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--muted-border);
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+.post-card-visibility.is-hidden {
+  color: #b45309;
+  border-color: #b45309;
+}
+
+.post-card-visibility.is-public {
+  color: var(--link);
+  border-color: var(--link);
 }
 

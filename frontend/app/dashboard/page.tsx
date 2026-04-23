@@ -3,6 +3,7 @@ import { backendFetch } from "@/lib/api";
 import { getAuthToken } from "@/lib/auth";
 import type { MyPost } from "@/lib/types";
 import Link from "next/link";
+import { PostCard } from "@/app/posts/post-card";
 
 async function loadMyPosts(): Promise<{ posts: MyPost[]; error: string | null }> {
   const token = getAuthToken();
@@ -49,24 +50,11 @@ export default async function DashboardPage() {
       {posts.length === 0 ? (
         <p>You have not posted yet.</p>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Post</th>
-              <th>Created</th>
-              <th>Visibility</th>
-            </tr>
-          </thead>
-          <tbody>
-            {posts.map((post) => (
-              <tr key={post.id}>
-                <td>{post.content}</td>
-                <td>{new Date(post.createdAtUtc).toLocaleString()}</td>
-                <td>{post.isHidden ? "Hidden" : "Public"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="post-feed">
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
       )}
     </section>
   );

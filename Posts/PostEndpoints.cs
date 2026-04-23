@@ -136,6 +136,21 @@ public sealed class ListMyPostsEndpoint(IUserStore users, IPostStore posts) : En
     }
 }
 
+public sealed class ListAllPostsEndpoint(IPostStore posts) : EndpointWithoutRequest<List<MyPostResponse>>
+{
+    public override void Configure()
+    {
+        Get("/api/admin/posts");
+        Roles(UserRole.Admin.ToString());
+    }
+
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        var response = posts.GetAll().Select(MyPostResponse.From).ToList();
+        await Send.OkAsync(response, ct);
+    }
+}
+
 public sealed class HidePostEndpoint(IPostStore posts) : Endpoint<PostByIdRequest, PublicPostResponse>
 {
     public override void Configure()
@@ -154,6 +169,27 @@ public sealed class HidePostEndpoint(IPostStore posts) : Endpoint<PostByIdReques
         }
 
         await Send.OkAsync(PublicPostResponse.From(hidden), ct);
+    }
+}
+
+public sealed class UnhidePostEndpoint(IPostStore posts) : Endpoint<PostByIdRequest, PublicPostResponse>
+{
+    public override void Configure()
+    {
+        Put("/api/posts/{id}/unhide");
+        Roles(UserRole.Admin.ToString());
+    }
+
+    public override async Task HandleAsync(PostByIdRequest req, CancellationToken ct)
+    {
+        var updated = posts.Unhide(req.Id);
+        if (updated is null)
+        {
+            await Send.NotFoundAsync(ct);
+            return;
+        }
+
+        await Send.OkAsync(PublicPostResponse.From(updated), ct);
     }
 }
 

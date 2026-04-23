@@ -71,6 +71,19 @@ public class PostEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
         var posts = await listResponse.Content.ReadFromJsonAsync<List<PublicPostResponse>>();
         Assert.NotNull(posts);
         Assert.DoesNotContain(posts!, p => p.Id == created.Id);
+
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+        var unhideResponse = await _client.PutAsJsonAsync($"/api/posts/{created.Id}/unhide", new { });
+        Assert.Equal(HttpStatusCode.OK, unhideResponse.StatusCode);
+
+        _client.DefaultRequestHeaders.Authorization = null;
+
+        var listAfterUnhideResponse = await _client.GetAsync("/api/public/posts");
+        Assert.Equal(HttpStatusCode.OK, listAfterUnhideResponse.StatusCode);
+
+        var postsAfterUnhide = await listAfterUnhideResponse.Content.ReadFromJsonAsync<List<PublicPostResponse>>();
+        Assert.NotNull(postsAfterUnhide);
+        Assert.Contains(postsAfterUnhide!, p => p.Id == created.Id);
     }
 
     [Fact]
@@ -101,6 +114,9 @@ public class PostEndpointsIntegrationTests : IClassFixture<WebApplicationFactory
 
         var hideResponse = await _client.PutAsJsonAsync($"/api/posts/{created!.Id}/hide", new { });
         Assert.Equal(HttpStatusCode.Forbidden, hideResponse.StatusCode);
+
+        var adminListResponse = await _client.GetAsync("/api/admin/posts");
+        Assert.Equal(HttpStatusCode.Forbidden, adminListResponse.StatusCode);
     }
 
     [Fact]

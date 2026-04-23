@@ -22,6 +22,13 @@ public sealed class EfPostStore(AppDbContext db) : IPostStore
         return entity.ToDomain();
     }
 
+    public IReadOnlyList<AppPost> GetAll() =>
+        db.Posts
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .AsNoTracking()
+            .Select(p => p.ToDomain())
+            .ToList();
+
     public IReadOnlyList<AppPost> GetPublic() =>
         db.Posts
             .Where(p => !p.IsHidden)
@@ -45,6 +52,18 @@ public sealed class EfPostStore(AppDbContext db) : IPostStore
             return null;
 
         entity.IsHidden = true;
+        db.SaveChanges();
+
+        return entity.ToDomain();
+    }
+
+    public AppPost? Unhide(Guid id)
+    {
+        var entity = db.Posts.FirstOrDefault(p => p.Id == id);
+        if (entity is null)
+            return null;
+
+        entity.IsHidden = false;
         db.SaveChanges();
 
         return entity.ToDomain();
