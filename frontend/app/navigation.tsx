@@ -90,7 +90,7 @@ export function Navigation() {
         )}
         {!isCurrentRoute("/users") && (
           <li>
-            <Link href="/users">View Users</Link>
+            <Link href="/users">Users</Link>
           </li>
         )}
       </ul>
