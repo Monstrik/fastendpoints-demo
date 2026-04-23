@@ -83,6 +83,11 @@ export function Navigation() {
   return (
     <nav className="nav-menu">
       <ul className="nav-links nav-left">
+        {!isCurrentRoute("/posts") && (
+          <li>
+            <Link href="/posts">Posts</Link>
+          </li>
+        )}
         {!isCurrentRoute("/users") && (
           <li>
             <Link href="/users">View Users</Link>

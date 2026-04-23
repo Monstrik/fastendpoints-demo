@@ -17,6 +17,7 @@ bld.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 bld.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(bld.Configuration.GetConnectionString("Default") ?? "Data Source=app.db"));
 bld.Services.AddScoped<IUserStore, EfUserStore>();
+bld.Services.AddScoped<IPostStore, EfPostStore>();
 
 bld.Services
     .AddOptions<JwtOptions>()
@@ -59,6 +60,18 @@ static void SeedAdminUser(IServiceProvider services)
 
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+    db.Database.ExecuteSqlRaw(
+        """
+        CREATE TABLE IF NOT EXISTS Posts (
+            Id TEXT NOT NULL PRIMARY KEY,
+            AuthorId TEXT NOT NULL,
+            AuthorLogin TEXT NOT NULL,
+            Content TEXT NOT NULL,
+            CreatedAtUtc TEXT NOT NULL,
+            IsHidden INTEGER NOT NULL DEFAULT 0
+        );
+        """);
+    db.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_Posts_CreatedAtUtc ON Posts (CreatedAtUtc);");
 
     var store = scope.ServiceProvider.GetRequiredService<IUserStore>();
 

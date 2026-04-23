@@ -21,3 +21,11 @@ export type PublicUserStatus = {
   fullName: string;
   status: string;
 };
+
+export type PublicPost = {
+  id: string;
+  authorLogin: string;
+  content: string;
+  createdAtUtc: string;
+};
+
