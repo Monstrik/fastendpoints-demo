@@ -2,6 +2,9 @@ import type { MyPost, PublicPost } from "@/lib/types";
 
 type Props = {
   post: PublicPost | MyPost;
+  canModerate?: boolean;
+  isSubmitting?: boolean;
+  onToggleVisibility?: (post: MyPost) => void;
 };
 
 function timeAgo(dateStr: string): string {
@@ -16,8 +19,9 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString();
 }
 
-export function PostCard({ post }: Props) {
+export function PostCard({ post, canModerate = false, isSubmitting = false, onToggleVisibility }: Props) {
   const visibility = "isHidden" in post ? (post.isHidden ? "Hidden" : "Public") : null;
+  const canToggle = canModerate && "isHidden" in post && !!onToggleVisibility;
 
   return (
     <article className="post-card">
@@ -32,9 +36,21 @@ export function PostCard({ post }: Props) {
           </span>
         </div>
         {visibility ? (
-          <span className={`post-card-visibility ${visibility === "Hidden" ? "is-hidden" : "is-public"}`}>
-            {visibility}
-          </span>
+          canToggle ? (
+            <button
+              type="button"
+              className={`post-card-visibility ${visibility === "Hidden" ? "is-hidden" : "is-public"}`}
+              onClick={() => onToggleVisibility(post)}
+              disabled={isSubmitting}
+              title={post.isHidden ? "Click to unhide post" : "Click to hide post"}
+            >
+              {visibility}
+            </button>
+          ) : (
+            <span className={`post-card-visibility ${visibility === "Hidden" ? "is-hidden" : "is-public"}`}>
+              {visibility}
+            </span>
+          )
         ) : null}
       </div>
       <p className="post-card-content">{post.content}</p>

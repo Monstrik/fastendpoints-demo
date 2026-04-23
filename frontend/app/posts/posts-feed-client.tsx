@@ -61,21 +61,13 @@ export function PostsFeedClient({ initialPosts, canModerate }: Props) {
     <div className="post-feed">
       {error ? <p style={{ color: "red" }}>{error}</p> : null}
       {posts.map((post) => (
-        <div key={post.id} className="post-card-wrap">
-          <PostCard post={post} />
-          {canModerate && isModeratedPost(post) ? (
-            <div className="post-card-actions">
-              <button
-                type="button"
-                onClick={() => toggleVisibility(post)}
-                disabled={isSubmitting}
-                className="secondary"
-              >
-                {post.isHidden ? "Unhide" : "Hide"}
-              </button>
-            </div>
-          ) : null}
-        </div>
+        <PostCard
+          key={post.id}
+          post={post}
+          canModerate={canModerate}
+          isSubmitting={isSubmitting}
+          onToggleVisibility={isModeratedPost(post) ? toggleVisibility : undefined}
+        />
       ))}
     </div>
   );
