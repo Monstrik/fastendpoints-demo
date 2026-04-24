@@ -31,16 +31,7 @@ public sealed class SetPostReactionEndpoint(IPostStore posts) : Endpoint<PostRea
             return;
         }
 
-        AppPost? updated;
-        try
-        {
-            updated = posts.SetReaction(req.Id, userId.Value, reaction!.Value);
-        }
-        catch (PostNotFoundException)
-        {
-            await Send.NotFoundAsync(ct);
-            return;
-        }
+        var updated = posts.SetReaction(req.Id, userId.Value, reaction!.Value);
 
         if (updated is null)
         {
