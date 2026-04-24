@@ -90,6 +90,13 @@ dotnet test MyWebAppFastEndpoints.sln
 - Security review checklist: `backend/security/SECURITY_REVIEW.md`
 - Health endpoints: `GET /health/live` (liveness), `GET /health/ready` (DB readiness)
 
+## Enhancement Notes
+
+- Runtime monitoring next step: add OpenTelemetry metrics and expose a Prometheus scrape endpoint.
+- Create Grafana dashboards for API latency (p95/p99), error rate, RPS, and readiness health status.
+- Add alert rules for sustained `5xx` spikes, readiness failures, and login failure bursts.
+- Add rate limiting for `/api/auth/login` and `/api/auth/forgot-password` as an additional abuse safeguard.
+
 ## Frontend Integration
 
 The frontend (`../frontend/`) communicates with this API via Next.js route handlers.
