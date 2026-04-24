@@ -892,6 +892,14 @@ button.post-card-visibility:disabled {
     display: inline-flex;
   }
 
+  .user-menu-desktop-only {
+    display: none;
+  }
+
+  .mobile-hidden-while-open {
+    display: none;
+  }
+
   .mobile-nav-panel {
     display: grid;
     gap: 12px;

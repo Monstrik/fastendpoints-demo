@@ -119,18 +119,8 @@ export function Navigation() {
         </li>
       </ul>
       <div className="nav-right-container" ref={mobileMenuRef}>
-        <button
-          type="button"
-          className="mobile-nav-toggle"
-          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={mobileMenuOpen}
-          aria-controls="mobile-navigation-panel"
-          onClick={toggleMobileMenu}
-        >
-          <span aria-hidden="true">{mobileMenuOpen ? "✕" : "☰"}</span>
-        </button>
         {user ? (
-          <div className="user-menu-container" ref={menuRef}>
+          <div className={`user-menu-container user-menu-desktop-only ${mobileMenuOpen ? "mobile-hidden-while-open" : ""}`.trim()} ref={menuRef}>
             <button
               className="user-icon-button"
               onClick={toggleUserMenu}
@@ -183,11 +173,22 @@ export function Navigation() {
           </div>
         ) : (
           !isLoginRoute && (
-            <Link href="/login" className="nav-login-link">
+            <Link href="/login" className={`nav-login-link ${mobileMenuOpen ? "mobile-hidden-while-open" : ""}`.trim()}>
               Login
             </Link>
           )
         )}
+
+        <button
+          type="button"
+          className="mobile-nav-toggle"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-navigation-panel"
+          onClick={toggleMobileMenu}
+        >
+          <span aria-hidden="true">{mobileMenuOpen ? "✕" : "☰"}</span>
+        </button>
 
         {mobileMenuOpen && (
           <div className="mobile-nav-panel" id="mobile-navigation-panel" aria-label="Mobile navigation">

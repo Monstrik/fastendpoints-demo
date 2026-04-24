@@ -125,6 +125,7 @@ describe("Navigation", () => {
       expect(screen.queryByLabelText("Mobile navigation")).not.toBeInTheDocument();
     });
   });
+
 });
 
 
