@@ -1,5 +1,6 @@
 import { backendFetch } from "@/lib/api";
 import type { PublicUserStatus } from "@/lib/types";
+import { PageHeader } from "@/app/page-header";
 
 async function loadUsers(): Promise<{ users: PublicUserStatus[]; error: string | null }> {
   const response = await backendFetch("/api/public/users", { method: "GET" });
@@ -22,7 +23,10 @@ export default async function UsersStatusPage() {
 
   return (
     <section className="page-shell">
-      <h1>Users</h1>
+      <PageHeader
+        title="Users"
+        subtitle="See who is online, what they are focused on, and how the team is feeling today."
+      />
       {error ? <p className="page-message page-message-error">{error}</p> : null}
       {!error && users.length === 0 ? (
         <div className="empty-state" role="status">

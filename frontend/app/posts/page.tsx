@@ -2,6 +2,7 @@ import { backendFetch } from "@/lib/api";
 import { getAuthToken, getCurrentUser } from "@/lib/auth";
 import type { MyPost, PublicPost } from "@/lib/types";
 import { PostsFeedClient } from "@/app/posts/posts-feed-client";
+import { PageHeader } from "@/app/page-header";
 
 async function loadPosts(): Promise<{ posts: PublicPost[]; error: string | null }> {
   const token = getAuthToken();
@@ -62,7 +63,10 @@ export default async function PostsPage() {
 
   return (
     <section className="page-shell">
-      <h1>{isAdmin ? "All Posts" : "Posts"}</h1>
+      <PageHeader
+        title={isAdmin ? "All Posts" : "Posts"}
+        subtitle={isAdmin ? "Review visibility, moderate content, and watch community activity in one place." : "Catch up on the latest updates, reactions, and conversations from the team."}
+      />
       {error ? <p className="page-message page-message-error">{error}</p> : null}
       <PostsFeedClient initialPosts={posts} canModerate={isAdmin} canReact={!!user} />
     </section>
