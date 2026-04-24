@@ -82,10 +82,12 @@ public class EfUserStoreTests
         var store = new EfUserStore(db);
 
         var created = store.Create("searchme", "hash", "Search", "Me", UserRole.User);
+        Assert.NotNull(created);
+
         var found = store.GetByLogin("searchme");
 
         Assert.NotNull(found);
-        Assert.Equal(created.Id, found!.Id);
+        Assert.Equal(created!.Id, found!.Id);
     }
 
     [Fact]
