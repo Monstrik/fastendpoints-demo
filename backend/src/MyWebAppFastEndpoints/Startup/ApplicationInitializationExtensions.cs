@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +10,16 @@ public static class ApplicationInitializationExtensions
 
     public static WebApplication UseApplicationPipeline(this WebApplication app)
     {
+        app.MapHealthChecks("/health/live", new HealthCheckOptions
+        {
+            Predicate = _ => false
+        });
+
+        app.MapHealthChecks("/health/ready", new HealthCheckOptions
+        {
+            Predicate = check => check.Tags.Contains("ready")
+        });
+
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseFastEndpoints();

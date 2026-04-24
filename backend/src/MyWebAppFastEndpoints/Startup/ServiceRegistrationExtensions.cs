@@ -14,6 +14,8 @@ public static class ServiceRegistrationExtensions
     {
         services.AddFastEndpoints();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddHealthChecks()
+            .AddCheck<DatabaseReadinessHealthCheck>("database", tags: ["ready"]);
         return services;
     }
 

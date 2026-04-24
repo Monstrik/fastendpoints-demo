@@ -86,6 +86,7 @@ dotnet test MyWebAppFastEndpoints.sln
 
 - Load testing scripts: `backend/perf/README.md`
 - Security review checklist: `backend/security/SECURITY_REVIEW.md`
+- Health endpoints: `GET /health/live` (liveness), `GET /health/ready` (DB readiness)
 
 ## Frontend Integration
 
