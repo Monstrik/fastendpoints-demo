@@ -45,7 +45,7 @@ export default async function DashboardPage() {
         actions={<Link href="/posts/create" className="page-link-inline">Create New Post</Link>}
       />
       <div className="page-meta-grid">
-        <div className="page-meta-item"><span className="page-meta-label">ID</span><span className="page-meta-value">{user.id}</span></div>
+        {/*<div className="page-meta-item"><span className="page-meta-label">ID</span><span className="page-meta-value">{user.id}</span></div>*/}
         <div className="page-meta-item"><span className="page-meta-label">Login</span><span className="page-meta-value">{user.login}</span></div>
         <div className="page-meta-item"><span className="page-meta-label">Name</span><span className="page-meta-value">{user.fullName}</span></div>
         <div className="page-meta-item"><span className="page-meta-label">Status</span><span className="page-meta-value">{user.status}</span></div>
