@@ -83,6 +83,11 @@ export function Navigation() {
   return (
     <nav className="nav-menu">
       <ul className="nav-links nav-left">
+        <li className="nav-brand-item">
+          <Link href="/posts" className="nav-brand-link" aria-label="MyWebApp home">
+            <img src="/branding/FED-LOGO.png" alt="MyWebApp logo" className="nav-brand-logo" />
+          </Link>
+        </li>
         {!isCurrentRoute("/posts") && (
           <li>
             <Link href="/posts">Posts</Link>

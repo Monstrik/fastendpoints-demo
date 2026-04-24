@@ -98,6 +98,26 @@ header {
   transition: opacity 0.2s ease, background 0.2s ease;
 }
 
+.nav-brand-item {
+  display: flex;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.nav-brand-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 4px;
+  border-radius: 10px;
+}
+
+.nav-brand-logo {
+  height: 30px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
 .nav-links a:hover {
   opacity: 0.95;
   text-decoration: none;
