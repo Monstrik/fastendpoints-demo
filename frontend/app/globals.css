@@ -12,6 +12,8 @@
   --link: #1f9306;
   --accent-soft: rgba(31, 147, 6, 0.14);
   --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.32);
+  --danger: #dc2626;
+  --placeholder: #8a93a5;
 }
 
 .light {
@@ -23,6 +25,8 @@
   --link: #1f9306;
   --accent-soft: rgba(31, 147, 6, 0.08);
   --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.12);
+  --danger: #dc2626;
+  --placeholder: #6b7280;
 }
 
 * {
@@ -301,12 +305,24 @@ input,
 select,
 textarea,
 button {
-  padding: 8px;
+  min-height: 42px;
+  padding: 10px 12px;
   font-size: 14px;
   border: 1px solid var(--muted-border);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--surface);
   color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--placeholder);
 }
 
 input:focus,
@@ -315,6 +331,8 @@ textarea:focus,
 button:focus-visible {
   outline: 2px solid var(--link);
   outline-offset: 2px;
+  border-color: var(--link);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 button:not(.theme-switch):not(.reaction-button) {
@@ -350,6 +368,27 @@ button.secondary {
 button.secondary:hover {
   background: var(--link);
   color: #fff;
+}
+
+button.danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: transparent;
+}
+
+button.danger:hover {
+  filter: brightness(1.05);
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--muted-border);
+}
+
+button.ghost:hover {
+  background: var(--accent-soft);
+  color: var(--text);
 }
 
 .theme-switch {
