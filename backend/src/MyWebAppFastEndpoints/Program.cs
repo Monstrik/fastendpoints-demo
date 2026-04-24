@@ -1,5 +1,7 @@
 using MyWebAppFastEndpoints.Infrastructure;
 
+DotEnvLoader.LoadFromDefaultLocations();
+
 var bld = WebApplication.CreateBuilder();
 
 bld.AddSerilogLogging();

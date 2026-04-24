@@ -31,11 +31,17 @@ From the repository root:
 
 ```bash
 cd backend
-export Jwt__SigningKey='replace-with-a-long-random-local-secret'
+cp .env.example .env
+```
+
+Set `Jwt__SigningKey` in `backend/.env`, then start:
+
+```bash
+cd backend
 dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
 ```
 
-`Jwt__SigningKey` is required at startup and should be provided by your environment (shell, IDE run configuration, or CI secret store).
+The backend automatically loads `.env` at startup. Shell/IDE/CI environment variables still take priority over `.env` values.
 
 The API runs on `http://localhost:5116` (or the port in `Properties/launchSettings.json`).
 
