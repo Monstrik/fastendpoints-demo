@@ -82,6 +82,9 @@ header {
   flex: 0 0 auto;
   order: 2;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .nav-links {
@@ -132,6 +135,22 @@ header {
   background: var(--accent-soft);
   color: var(--text);
   font-weight: 700;
+}
+
+.mobile-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--muted-border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.mobile-nav-panel {
+  display: none;
 }
 
 .user-menu-container {
@@ -231,6 +250,43 @@ header {
   padding: 10px 16px;
   color: var(--text);
   font-size: 14px;
+}
+
+.mobile-nav-section {
+  display: grid;
+  gap: 6px;
+}
+
+.mobile-nav-section a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--link);
+}
+
+.mobile-nav-section a:hover,
+.mobile-nav-section a.is-active {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.mobile-nav-divider {
+  height: 1px;
+  background: var(--muted-border);
+}
+
+.mobile-nav-theme-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 2px;
+}
+
+.mobile-logout-button {
+  justify-content: center;
+  text-align: center;
 }
 
 .logout-button {
@@ -819,6 +875,10 @@ button.post-card-visibility:disabled {
     gap: 8px;
   }
 
+  .desktop-nav-item {
+    display: none;
+  }
+
   .nav-links a {
     font-size: 13px;
     padding: 6px 8px;
@@ -826,6 +886,30 @@ button.post-card-visibility:disabled {
 
   .nav-brand-logo {
     height: 24px;
+  }
+
+  .mobile-nav-toggle {
+    display: inline-flex;
+  }
+
+  .mobile-nav-panel {
+    display: grid;
+    gap: 12px;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(280px, calc(100vw - 20px));
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid var(--muted-border);
+    background: var(--surface-elevated);
+    box-shadow: var(--shadow-soft);
+    z-index: 1000;
+    animation: slideDown 0.18s ease;
+  }
+
+  .nav-login-link {
+    display: none;
   }
 
   main {

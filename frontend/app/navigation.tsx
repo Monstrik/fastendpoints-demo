@@ -17,9 +17,11 @@ export function Navigation() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const normalizedPath = pathname?.replace(/\/$/, "") || "/";
   const isLoginRoute = normalizedPath === "/login";
   const isCurrentRoute = (href: string) => {
@@ -54,25 +56,45 @@ export function Navigation() {
     fetchUser();
   }, [pathname]);
 
-  // Close menu when clicking outside
+  useEffect(() => {
+    setMenuOpen(false);
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
       }
+
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setMobileMenuOpen(false);
+      }
     };
 
-    if (menuOpen) {
+    if (menuOpen || mobileMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
       return () => document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [menuOpen]);
+  }, [menuOpen, mobileMenuOpen]);
+
+  const toggleUserMenu = () => {
+    setMenuOpen((current) => !current);
+    setMobileMenuOpen(false);
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen((current) => !current);
+    setMenuOpen(false);
+  };
 
   const handleLogout = async () => {
     const response = await fetch("/api/auth/logout", { method: "POST" });
     if (response.ok) {
       setUser(null);
       setMenuOpen(false);
+      setMobileMenuOpen(false);
       router.push("/login");
     }
   };
@@ -89,25 +111,37 @@ export function Navigation() {
             <img src="/branding/FED-LOGO.png" alt="MyWebApp logo" className="nav-brand-logo" />
           </Link>
         </li>
-        <li>
+        <li className="desktop-nav-item">
           <Link href="/posts" className={navLinkClass("/posts")}>Posts</Link>
         </li>
-        <li>
+        <li className="desktop-nav-item">
           <Link href="/users" className={navLinkClass("/users")}>Users</Link>
         </li>
       </ul>
-      <div className="nav-right-container">
+      <div className="nav-right-container" ref={mobileMenuRef}>
+        <button
+          type="button"
+          className="mobile-nav-toggle"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-navigation-panel"
+          onClick={toggleMobileMenu}
+        >
+          <span aria-hidden="true">{mobileMenuOpen ? "✕" : "☰"}</span>
+        </button>
         {user ? (
           <div className="user-menu-container" ref={menuRef}>
             <button
               className="user-icon-button"
-              onClick={() => setMenuOpen(!menuOpen)}
+              onClick={toggleUserMenu}
               title={user.login}
+              aria-expanded={menuOpen}
+              aria-controls="user-menu-panel"
             >
               <span className="user-icon">👤</span>
             </button>
             {menuOpen && (
-              <div className="user-dropdown-menu">
+              <div className="user-dropdown-menu" id="user-menu-panel">
                 <div className="menu-header">
                   <span className="menu-username">{user.login}</span>
                 </div>
@@ -153,6 +187,61 @@ export function Navigation() {
               Login
             </Link>
           )
+        )}
+
+        {mobileMenuOpen && (
+          <div className="mobile-nav-panel" id="mobile-navigation-panel" aria-label="Mobile navigation">
+            <div className="mobile-nav-section">
+              <Link href="/posts" className={navLinkClass("/posts")} onClick={() => setMobileMenuOpen(false)}>
+                Posts
+              </Link>
+              <Link href="/users" className={navLinkClass("/users")} onClick={() => setMobileMenuOpen(false)}>
+                Users
+              </Link>
+            </div>
+
+            {user ? (
+              <>
+                <div className="mobile-nav-divider" />
+                <div className="mobile-nav-section">
+                  {!isCurrentRoute("/dashboard") && (
+                    <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                      Dashboard
+                    </Link>
+                  )}
+                  {!isCurrentRoute("/user") && (
+                    <Link href="/user" onClick={() => setMobileMenuOpen(false)}>
+                      My Profile
+                    </Link>
+                  )}
+                  {user.role.toLowerCase() === "admin" && !isCurrentRoute("/admin/users") && (
+                    <Link href="/admin/users" onClick={() => setMobileMenuOpen(false)}>
+                      Manage Users
+                    </Link>
+                  )}
+                </div>
+                <div className="mobile-nav-divider" />
+                <div className="mobile-nav-theme-row">
+                  <span>Theme</span>
+                  <ThemeToggle />
+                </div>
+                <button type="button" onClick={handleLogout} className="logout-button mobile-logout-button">
+                  Logout
+                </button>
+              </>
+            ) : (
+              !isLoginRoute && (
+                <>
+                  <div className="mobile-nav-divider" />
+                  <div className="mobile-nav-section">
+                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                      Login
+                    </Link>
+                  </div>
+                </>
+              )
+            )}
+          </div>
         )}
       </div>
     </nav>

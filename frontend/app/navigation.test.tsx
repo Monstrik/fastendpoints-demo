@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -104,6 +104,26 @@ describe("Navigation", () => {
 
     expect(screen.queryByRole("link", { name: /dashboard/i })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: /my profile/i })).toBeInTheDocument();
+  });
+
+  it("opens and closes the mobile navigation panel", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue({ ok: false } as Response);
+
+    render(<Navigation />);
+
+    const toggle = await screen.findByRole("button", { name: /open navigation menu/i });
+    await userEvent.click(toggle);
+
+    const panel = screen.getByLabelText("Mobile navigation");
+    expect(within(panel).getByRole("link", { name: /^posts$/i })).toBeInTheDocument();
+    expect(within(panel).getByRole("link", { name: /^users$/i })).toBeInTheDocument();
+    expect(within(panel).getByRole("link", { name: /login/i })).toBeInTheDocument();
+
+    await userEvent.click(document.body);
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText("Mobile navigation")).not.toBeInTheDocument();
+    });
   });
 });
 
