@@ -233,7 +233,8 @@ header {
   transition: background 0.2s ease;
 }
 
-.menu-items a:hover {
+.menu-items a:hover,
+.menu-items a.is-active {
   background: var(--bg);
 }
 

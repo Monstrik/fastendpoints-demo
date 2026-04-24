@@ -136,23 +136,19 @@ export function Navigation() {
                   <span className="menu-username">{user.login}</span>
                 </div>
                 <ul className="menu-items">
-                  {!isCurrentRoute("/dashboard") && (
+                  <li>
+                    <Link href="/dashboard" className={navLinkClass("/dashboard")} onClick={() => setMenuOpen(false)}>
+                      Dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/user" className={navLinkClass("/user")} onClick={() => setMenuOpen(false)}>
+                      My Profile
+                    </Link>
+                  </li>
+                  {user.role.toLowerCase() === "admin" && (
                     <li>
-                      <Link href="/dashboard" onClick={() => setMenuOpen(false)}>
-                        Dashboard
-                      </Link>
-                    </li>
-                  )}
-                  {!isCurrentRoute("/user") && (
-                    <li>
-                      <Link href="/user" onClick={() => setMenuOpen(false)}>
-                        My Profile
-                      </Link>
-                    </li>
-                  )}
-                  {user.role.toLowerCase() === "admin" && !isCurrentRoute("/admin/users") && (
-                    <li>
-                      <Link href="/admin/users" onClick={() => setMenuOpen(false)}>
+                      <Link href="/admin/users" className={navLinkClass("/admin/users")} onClick={() => setMenuOpen(false)}>
                         Manage Users
                       </Link>
                     </li>
@@ -205,18 +201,14 @@ export function Navigation() {
               <>
                 <div className="mobile-nav-divider" />
                 <div className="mobile-nav-section">
-                  {!isCurrentRoute("/dashboard") && (
-                    <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                      Dashboard
-                    </Link>
-                  )}
-                  {!isCurrentRoute("/user") && (
-                    <Link href="/user" onClick={() => setMobileMenuOpen(false)}>
-                      My Profile
-                    </Link>
-                  )}
-                  {user.role.toLowerCase() === "admin" && !isCurrentRoute("/admin/users") && (
-                    <Link href="/admin/users" onClick={() => setMobileMenuOpen(false)}>
+                  <Link href="/dashboard" className={navLinkClass("/dashboard")} onClick={() => setMobileMenuOpen(false)}>
+                    Dashboard
+                  </Link>
+                  <Link href="/user" className={navLinkClass("/user")} onClick={() => setMobileMenuOpen(false)}>
+                    My Profile
+                  </Link>
+                  {user.role.toLowerCase() === "admin" && (
+                    <Link href="/admin/users" className={navLinkClass("/admin/users")} onClick={() => setMobileMenuOpen(false)}>
                       Manage Users
                     </Link>
                   )}

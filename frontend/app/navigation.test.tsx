@@ -84,7 +84,7 @@ describe("Navigation", () => {
     });
   });
 
-  it("hides current-route menu links for authenticated users", async () => {
+  it("shows current-route menu links for authenticated users and marks them active", async () => {
     pathnameState.value = "/dashboard";
 
     vi.spyOn(global, "fetch").mockResolvedValue({
@@ -102,8 +102,13 @@ describe("Navigation", () => {
 
     await userEvent.click(await screen.findByTitle("user"));
 
-    expect(screen.queryByRole("link", { name: /dashboard/i })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /my profile/i })).toBeInTheDocument();
+    const dashboardLink = screen.getByRole("link", { name: /dashboard/i });
+    const profileLink = screen.getByRole("link", { name: /my profile/i });
+
+    expect(dashboardLink).toBeInTheDocument();
+    expect(dashboardLink).toHaveClass("is-active");
+    expect(profileLink).toBeInTheDocument();
+    expect(profileLink).not.toHaveClass("is-active");
   });
 
   it("opens and closes the mobile navigation panel", async () => {
