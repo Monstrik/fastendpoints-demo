@@ -179,14 +179,28 @@ public class DotEnvLoaderTests : IDisposable
     }
 
     [Fact]
-    public void Load_SetsMarkerForFileLoadedKeys()
+    public void Load_TracksFileLoadedKeys_AllowingOverrideByLaterFile()
     {
-        var key = Key("MARKED");
-        var file = WriteTempFile($"{key}=some_value\n");
+        // Verifies that the internal file-loaded-key tracking works:
+        // a key set by the first Load can be replaced by a subsequent Load
+        // with overwriteFileSources=true, while a pure process env var cannot.
+        var fileKey = Key("TRACK_FILE");
+        var procKey = Key("TRACK_PROC");
 
-        DotEnvLoader.Load(file);
+        // Process env var set before any file load
+        Environment.SetEnvironmentVariable(procKey, "proc_original");
 
-        Assert.Equal("1", Environment.GetEnvironmentVariable($"_DotEnv_{key}"));
+        var firstFile = WriteTempFile($"{fileKey}=first\n{procKey}=should_not_apply\n");
+        DotEnvLoader.Load(firstFile, overwriteFileSources: false);
+
+        Assert.Equal("first", Environment.GetEnvironmentVariable(fileKey));
+        Assert.Equal("proc_original", Environment.GetEnvironmentVariable(procKey)); // untouched
+
+        var secondFile = WriteTempFile($"{fileKey}=second\n{procKey}=still_should_not_apply\n");
+        DotEnvLoader.Load(secondFile, overwriteFileSources: true);
+
+        Assert.Equal("second", Environment.GetEnvironmentVariable(fileKey));       // overridden
+        Assert.Equal("proc_original", Environment.GetEnvironmentVariable(procKey)); // still untouched
     }
 
     [Fact]

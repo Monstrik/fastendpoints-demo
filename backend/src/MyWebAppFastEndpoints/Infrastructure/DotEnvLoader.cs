@@ -3,6 +3,12 @@ namespace MyWebAppFastEndpoints.Infrastructure;
 public static class DotEnvLoader
 {
     /// <summary>
+    /// Tracks keys that were set by a file load (as opposed to process/shell/CI env vars).
+    /// Only keys in this set can be overridden by a higher-priority file like .env.local.
+    /// </summary>
+    private static readonly HashSet<string> FileLoadedKeys = new(StringComparer.Ordinal);
+
+    /// <summary>
     /// Loads environment variables from the first .env found walking up from the
     /// current directory, then overlays values from a sibling .env.local (if present).
     /// Priority (highest → lowest): process env > .env.local > .env
@@ -48,15 +54,13 @@ public static class DotEnvLoader
             var existing = Environment.GetEnvironmentVariable(key);
 
             // Process/shell/CI variables (set before any file load) always win.
-            // The _DotEnv_ prefix marks keys that were set by a previous file load —
-            // only those can be overridden by a higher-priority file like .env.local.
-            var setByFileLoad = Environment.GetEnvironmentVariable($"_DotEnv_{key}") == "1";
-
-            if (existing is not null && !(overwriteFileSources && setByFileLoad))
+            // Only keys previously set by a file load (tracked in FileLoadedKeys) can be
+            // overridden by a higher-priority file like .env.local.
+            if (existing is not null && !(overwriteFileSources && FileLoadedKeys.Contains(key)))
                 continue;
 
             Environment.SetEnvironmentVariable(key, value);
-            Environment.SetEnvironmentVariable($"_DotEnv_{key}", "1");
+            FileLoadedKeys.Add(key);
         }
     }
 
