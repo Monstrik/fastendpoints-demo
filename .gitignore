@@ -34,3 +34,10 @@ frontend/.env.local
 frontend/tsconfig.tsbuildinfo
 frontend/coverage/
 /backend/.env.local
+/backend/.env
+
+# Backend perf/security artifacts
+backend/perf/results/*
+!backend/perf/results/.gitkeep
+backend/security/reports/*
+!backend/security/reports/.gitkeep

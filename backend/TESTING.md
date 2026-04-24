@@ -17,6 +17,30 @@ reportgenerator -reports:"backend/**/TestResults/**/coverage.cobertura.xml" -tar
 open backend/coverage-report/index.html
 ```
 
+## Performance / Load
+
+```bash
+# Requires k6 (macOS)
+brew install k6
+
+# Start backend in another terminal, then run load scenarios
+cd backend
+chmod +x perf/run-perf.sh
+./perf/run-perf.sh
+```
+
+Results are saved under `backend/perf/results/<timestamp>/`.
+
+## Security Review
+
+```bash
+cd backend
+chmod +x security/run-security-review.sh security/authz-smoke.sh
+./security/run-security-review.sh
+```
+
+Review findings in `backend/security/SECURITY_REVIEW.md` and generated artifacts in `backend/security/reports/<timestamp>/`.
+
 ## Coverage
 
 - **User Management** — create, read, update, delete, login validation, status

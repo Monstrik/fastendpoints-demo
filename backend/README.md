@@ -82,6 +82,11 @@ cd backend
 dotnet test MyWebAppFastEndpoints.sln
 ```
 
+## Ops Checks
+
+- Load testing scripts: `backend/perf/README.md`
+- Security review checklist: `backend/security/SECURITY_REVIEW.md`
+
 ## Frontend Integration
 
 The frontend (`../frontend/`) communicates with this API via Next.js route handlers.
