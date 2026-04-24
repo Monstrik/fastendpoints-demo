@@ -43,9 +43,9 @@ dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
 
 The backend automatically loads `.env` at startup. Shell/IDE/CI environment variables still take priority over `.env` values.
 
-> **Per-machine overrides** — create `backend/.env.local` to override specific values from `.env` without modifying it.  
+> **Per-machine overrides** — copy `backend/.env.local.example` to `backend/.env.local` and uncomment the keys you want to override.  
 > Load priority (highest → lowest): process/shell env > `.env.local` > `.env`  
-> Both `.env` and `.env.local` are gitignored.
+> Both `.env` and `.env.local` are gitignored; `.env.local.example` documents which keys are safe to override.
 
 The API runs on `http://localhost:5116` (or the port in `Properties/launchSettings.json`).
 
