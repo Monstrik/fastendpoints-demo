@@ -236,6 +236,28 @@ main {
   padding: 28px 24px 40px;
 }
 
+.page-transition {
+  animation: page-enter 220ms ease-out;
+  will-change: transform, opacity;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none;
+  }
+}
+
 main > * {
   background: var(--surface-elevated);
   border: 1px solid var(--muted-border);
