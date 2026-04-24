@@ -46,10 +46,12 @@ export default async function DashboardPage() {
       />
       <div className="page-meta-grid">
         {/*<div className="page-meta-item"><span className="page-meta-label">ID</span><span className="page-meta-value">{user.id}</span></div>*/}
-        <div className="page-meta-item"><span className="page-meta-label">Login</span><span className="page-meta-value">{user.login}</span></div>
         <div className="page-meta-item"><span className="page-meta-label">Name</span><span className="page-meta-value">{user.fullName}</span></div>
         <div className="page-meta-item"><span className="page-meta-label">Status</span><span className="page-meta-value">{user.status}</span></div>
+        <div className="page-meta-item"><span className="page-meta-label">Login</span><span className="page-meta-value">{user.login}</span></div>
+
         <div className="page-meta-item"><span className="page-meta-label">Role</span><span className="page-meta-value">{user.role}</span></div>
+
       </div>
       <h2>My Posts</h2>
       {error ? <p className="page-message page-message-error">{error}</p> : null}
