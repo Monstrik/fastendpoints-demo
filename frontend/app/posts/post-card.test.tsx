@@ -123,5 +123,27 @@ describe("PostCard", () => {
     // Should not show view icon
     expect(screen.queryByText("👁️")).not.toBeInTheDocument();
   });
+
+  it("applies stronger active state classes to the selected reaction", () => {
+    render(
+      <PostCard
+        post={{
+          id: "post-6",
+          authorLogin: "aya",
+          authorStatus: "🟢 Available",
+          content: "Liked already",
+          createdAtUtc: "2026-04-23T10:00:00Z",
+          likesCount: 3,
+          dislikesCount: 0,
+          viewerReaction: "Like"
+        }}
+        canReact
+        onReact={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /like post\. 3 likes\./i })).toHaveClass("reaction-like", "is-active");
+    expect(screen.getByRole("button", { name: /dislike post\. 0 dislikes\./i })).toHaveClass("reaction-dislike");
+  });
 });
 

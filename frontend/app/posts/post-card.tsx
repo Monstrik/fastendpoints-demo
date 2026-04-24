@@ -96,7 +96,7 @@ export function PostCard({
           <>
             <button
               type="button"
-              className={`reaction-button ${post.viewerReaction === "Like" ? "is-active" : ""}`}
+              className={`reaction-button reaction-like ${post.viewerReaction === "Like" ? "is-active" : ""}`}
               onClick={() => onReact?.(post, "Like")}
               disabled={!canReact || isReacting}
               aria-label={`Like post. ${post.likesCount} likes.`}
@@ -108,7 +108,7 @@ export function PostCard({
             </button>
             <button
               type="button"
-              className={`reaction-button ${post.viewerReaction === "Dislike" ? "is-active" : ""}`}
+              className={`reaction-button reaction-dislike ${post.viewerReaction === "Dislike" ? "is-active" : ""}`}
               onClick={() => onReact?.(post, "Dislike")}
               disabled={!canReact || isReacting}
               aria-label={`Dislike post. ${post.dislikesCount} dislikes.`}
