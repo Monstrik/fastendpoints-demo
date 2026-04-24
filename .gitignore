@@ -33,4 +33,4 @@ frontend/.next/
 frontend/.env.local
 frontend/tsconfig.tsbuildinfo
 frontend/coverage/
-/backend/.env
+/backend/.env.local
