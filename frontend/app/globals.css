@@ -305,7 +305,6 @@ input,
 select,
 textarea,
 button {
-  min-height: 42px;
   padding: 10px 12px;
   font-size: 14px;
   border: 1px solid var(--muted-border);
@@ -313,6 +312,17 @@ button {
   background: var(--surface);
   color: var(--text);
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+input,
+select,
+textarea {
+  min-height: 42px;
+}
+
+button {
+  min-height: 32px;
+  padding: 6px 10px;
 }
 
 textarea {
