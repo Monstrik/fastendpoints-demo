@@ -75,7 +75,7 @@ public class InMemoryUserStoreTests
     }
 
     [Fact]
-    public void ConcurrentOperations_AreThreadSafe()
+    public async Task ConcurrentOperations_AreThreadSafe()
     {
         var store = new InMemoryUserStore();
         var results = new System.Collections.Concurrent.ConcurrentBag<Guid?>();
@@ -95,7 +95,7 @@ public class InMemoryUserStoreTests
             }));
         }
 
-        Task.WaitAll(tasks.ToArray());
+        await Task.WhenAll(tasks);
 
         Assert.Equal(10, results.Count);
         Assert.Equal(10, new System.Collections.Generic.HashSet<Guid>(results.Where(id => id.HasValue).Select(id => id!.Value)).Count); // All unique
