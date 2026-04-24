@@ -43,6 +43,8 @@ dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
 
 The backend automatically loads `.env` at startup. Shell/IDE/CI environment variables still take priority over `.env` values.
 
+Set `ENABLE_SWAGGER=true` to expose Swagger UI at `/swagger` and OpenAPI JSON at `/swagger/v1/swagger.json`.
+
 > **Per-machine overrides** — copy `backend/.env.local.example` to `backend/.env.local` and uncomment the keys you want to override.  
 > Load priority (highest → lowest): process/shell env > `.env.local` > `.env`  
 > Both `.env` and `.env.local` are gitignored; `.env.local.example` documents which keys are safe to override.

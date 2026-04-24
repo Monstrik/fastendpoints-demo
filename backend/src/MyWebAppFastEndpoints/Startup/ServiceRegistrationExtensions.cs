@@ -13,6 +13,8 @@ public static class ServiceRegistrationExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddFastEndpoints();
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddHealthChecks()
             .AddCheck<DatabaseReadinessHealthCheck>("database", tags: ["ready"]);
