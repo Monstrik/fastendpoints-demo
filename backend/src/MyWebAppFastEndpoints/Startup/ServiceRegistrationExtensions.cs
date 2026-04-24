@@ -46,10 +46,16 @@ public static class ServiceRegistrationExtensions
         if (string.IsNullOrWhiteSpace(jwtOptions.SigningKey))
             throw new InvalidOperationException("JWT signing key is required. Set configuration key 'Jwt:SigningKey' via environment variable 'Jwt__SigningKey'.");
 
+        var keyByteCount = Encoding.UTF8.GetByteCount(jwtOptions.SigningKey);
+        if (keyByteCount < 32)
+            throw new InvalidOperationException(
+                $"Jwt:SigningKey is too short ({keyByteCount * 8} bits). HS256 requires at least 256 bits (32 characters). Update your .env or environment variable 'Jwt__SigningKey'.");
+
         services
             .AddOptions<JwtOptions>()
             .Bind(configuration.GetSection(JwtOptions.SectionName))
             .Validate(o => !string.IsNullOrWhiteSpace(o.SigningKey), "JWT signing key is required. Set environment variable 'Jwt__SigningKey'.")
+            .Validate(o => Encoding.UTF8.GetByteCount(o.SigningKey) >= 32, "Jwt:SigningKey must be at least 32 characters for HS256.")
             .ValidateOnStart();
 
         services
