@@ -61,9 +61,9 @@ export default async function PostsPage() {
   }
 
   return (
-    <section>
+    <section className="page-shell">
       <h1>{isAdmin ? "All Posts" : "Posts"}</h1>
-      {error ? <p style={{ color: "red" }}>{error}</p> : null}
+      {error ? <p className="page-message page-message-error">{error}</p> : null}
       <PostsFeedClient initialPosts={posts} canModerate={isAdmin} canReact={!!user} />
     </section>
   );

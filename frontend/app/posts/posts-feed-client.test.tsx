@@ -65,7 +65,8 @@ describe("PostsFeedClient", () => {
   it("shows a friendly empty state when there are no posts", () => {
     render(<PostsFeedClient initialPosts={[]} canModerate={false} canReact={false} />);
 
-    expect(screen.getByText("No posts yet.")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /no posts yet/i })).toBeInTheDocument();
+    expect(screen.getByText(/check back soon to see what the community is sharing/i)).toBeInTheDocument();
   });
 
   it("shows an error when a reaction request fails", async () => {

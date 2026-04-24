@@ -111,12 +111,21 @@ export function PostsFeedClient({ initialPosts, canModerate, canReact }: Props) 
   }
 
   if (posts.length === 0) {
-    return <p>No posts yet.</p>;
+    return (
+      <div className="empty-state" role="status">
+        <h2 className="empty-state-title">No posts yet</h2>
+        <p className="empty-state-body">
+          {canReact
+            ? "Be the first to start the conversation and share an update."
+            : "Check back soon to see what the community is sharing."}
+        </p>
+      </div>
+    );
   }
 
   return (
     <div className="post-feed">
-      {error ? <p style={{ color: "red" }}>{error}</p> : null}
+      {error ? <p className="page-message page-message-error">{error}</p> : null}
       {posts.map((post) => (
         <PostCard
           key={post.id}

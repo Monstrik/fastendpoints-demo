@@ -126,6 +126,18 @@ describe("app pages", () => {
     expect(screen.getByText("Aya Kovi")).toBeInTheDocument();
   });
 
+  it("renders users page empty state when there are no users", async () => {
+    backendFetchMock.mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue([])
+    });
+
+    render(await UsersStatusPage());
+
+    expect(screen.getByRole("heading", { name: /no user statuses yet/i })).toBeInTheDocument();
+    expect(screen.getByText(/invite teammates to sign in and update their status/i)).toBeInTheDocument();
+  });
+
   it("renders users page error state when fetch fails", async () => {
     backendFetchMock.mockResolvedValue({ ok: false, status: 503 });
 
@@ -156,6 +168,19 @@ describe("app pages", () => {
     render(await PostsPage());
     expect(screen.getByText("Posts")).toBeInTheDocument();
     expect(screen.getByText("posts-feed-1-false-false")).toBeInTheDocument();
+  });
+
+  it("renders posts page empty state when there are no posts", async () => {
+    getCurrentUserMock.mockResolvedValue(null);
+    getAuthTokenMock.mockReturnValue(undefined);
+    backendFetchMock.mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue([])
+    });
+
+    render(await PostsPage());
+
+    expect(screen.getByText("posts-feed-0-false-false")).toBeInTheDocument();
   });
 
   it("renders admin posts page with moderation enabled", async () => {
