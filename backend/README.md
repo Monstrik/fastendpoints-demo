@@ -31,8 +31,11 @@ From the repository root:
 
 ```bash
 cd backend
+export Jwt__SigningKey='replace-with-a-long-random-local-secret'
 dotnet run --project src/MyWebAppFastEndpoints/MyWebAppFastEndpoints.csproj
 ```
+
+`Jwt__SigningKey` is required at startup and should be provided by your environment (shell, IDE run configuration, or CI secret store).
 
 The API runs on `http://localhost:5116` (or the port in `Properties/launchSettings.json`).
 
@@ -47,9 +50,9 @@ On first run, the application creates the SQLite database at `db/app.db` and see
 ## Project Structure
 
 - `src/MyWebAppFastEndpoints/`
-  - `Data/` - EF Core context and repository implementations.
-  - `Users/` - User endpoints, contracts, and domain logic.
-  - `Posts/` - Post endpoints, contracts, and domain logic.
+  - `Features/Users/` - User endpoints, contracts, domain logic, and persistence.
+  - `Features/Posts/` - Post endpoints, contracts, domain logic, and persistence.
+  - `Infrastructure/Persistence/` - EF Core context and entities.
   - `Startup/` - Service registration and middleware setup.
 - `tests/` - Unit and integration tests.
 

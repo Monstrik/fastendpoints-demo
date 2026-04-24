@@ -44,12 +44,12 @@ public static class ServiceRegistrationExtensions
     {
         var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
         if (string.IsNullOrWhiteSpace(jwtOptions.SigningKey))
-            throw new InvalidOperationException("Jwt:SigningKey is required.");
+            throw new InvalidOperationException("JWT signing key is required. Set configuration key 'Jwt:SigningKey' via environment variable 'Jwt__SigningKey'.");
 
         services
             .AddOptions<JwtOptions>()
             .Bind(configuration.GetSection(JwtOptions.SectionName))
-            .Validate(o => !string.IsNullOrWhiteSpace(o.SigningKey), "Jwt:SigningKey is required.")
+            .Validate(o => !string.IsNullOrWhiteSpace(o.SigningKey), "JWT signing key is required. Set environment variable 'Jwt__SigningKey'.")
             .ValidateOnStart();
 
         services

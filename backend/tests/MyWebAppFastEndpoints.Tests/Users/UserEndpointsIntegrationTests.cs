@@ -1,13 +1,12 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
 
-public class UserEndpointsIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+public class UserEndpointsIntegrationTests : IClassFixture<TestsWebApplicationFactory>
 {
     private readonly HttpClient _client;
 
-    public UserEndpointsIntegrationTests(WebApplicationFactory<Program> factory)
+    public UserEndpointsIntegrationTests(TestsWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
     }
