@@ -35,8 +35,11 @@ describe("Navigation", () => {
     const { rerender } = render(<Navigation />);
 
     expect(await screen.findByRole("link", { name: /login/i })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /posts/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /^posts$/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /users/i })).toBeInTheDocument();
+
+    const postsLink = screen.getByRole("link", { name: /^posts$/i });
+    expect(postsLink).toHaveClass("is-active");
 
     pathnameState.value = "/login";
     rerender(<Navigation />);

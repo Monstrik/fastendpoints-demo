@@ -26,6 +26,7 @@ export function Navigation() {
     const normalizedHref = href.replace(/\/$/, "") || "/";
     return normalizedPath === normalizedHref;
   };
+  const navLinkClass = (href: string) => (isCurrentRoute(href) ? "is-active" : undefined);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -88,16 +89,12 @@ export function Navigation() {
             <img src="/branding/FED-LOGO.png" alt="MyWebApp logo" className="nav-brand-logo" />
           </Link>
         </li>
-        {!isCurrentRoute("/posts") && (
-          <li>
-            <Link href="/posts">Posts</Link>
-          </li>
-        )}
-        {!isCurrentRoute("/users") && (
-          <li>
-            <Link href="/users">Users</Link>
-          </li>
-        )}
+        <li>
+          <Link href="/posts" className={navLinkClass("/posts")}>Posts</Link>
+        </li>
+        <li>
+          <Link href="/users" className={navLinkClass("/users")}>Users</Link>
+        </li>
       </ul>
       <div className="nav-right-container">
         {user ? (

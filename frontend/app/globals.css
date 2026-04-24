@@ -124,6 +124,12 @@ header {
   background: var(--accent-soft);
 }
 
+.nav-links a.is-active {
+  background: var(--accent-soft);
+  color: var(--text);
+  font-weight: 700;
+}
+
 .user-menu-container {
   position: relative;
 }
