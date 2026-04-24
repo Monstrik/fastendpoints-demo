@@ -56,6 +56,13 @@ On first run, the application creates the SQLite database at `db/app.db` and see
   - `Startup/` - Service registration and middleware setup.
 - `tests/` - Unit and integration tests.
 
+### Folder conventions
+
+- Put feature behavior under `src/MyWebAppFastEndpoints/Features/<FeatureName>/` (contracts, endpoints, validators, and feature-specific stores).
+- Keep shared cross-feature infrastructure under `src/MyWebAppFastEndpoints/Infrastructure/`.
+- Keep persistence primitives (EF `DbContext` and entities) under `src/MyWebAppFastEndpoints/Infrastructure/Persistence/`.
+- Place tests in `tests/MyWebAppFastEndpoints.Tests/` with subfolders that mirror backend responsibilities.
+
 ## Testing
 
 For detailed test setup and coverage reports, see [TESTING.md](./TESTING.md).
