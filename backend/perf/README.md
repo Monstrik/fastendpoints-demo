@@ -35,6 +35,28 @@ chmod +x perf/run-perf.sh
 ./perf/run-perf.sh
 ```
 
+## Live Dashboard (k6 Web UI)
+
+For local development, you can run a single scenario with the built-in k6 web dashboard:
+
+```bash
+cd backend
+export K6_WEB_DASHBOARD=true
+export K6_WEB_DASHBOARD_OPEN=true
+k6 run perf/k6/auth-write.js
+```
+
+Public-read scenario with the same dashboard:
+
+```bash
+cd backend
+export K6_WEB_DASHBOARD=true
+export K6_WEB_DASHBOARD_OPEN=true
+k6 run perf/k6/public-read.js
+```
+
+This opens a local browser dashboard while the test is running.
+
 Optional env overrides:
 
 ```bash
@@ -45,4 +67,21 @@ ADMIN_PASSWORD='Admin123!' \
 ```
 
 Artifacts are written to `backend/perf/results/<timestamp>/`.
+
+## Open Results (macOS)
+
+Open the latest run artifacts (JSON summaries + logs):
+
+```bash
+cd backend
+chmod +x perf/open-report.sh
+./perf/open-report.sh
+```
+
+Open a specific timestamped run:
+
+```bash
+cd backend
+./perf/open-report.sh 20260424-140111
+```
 
