@@ -10,7 +10,17 @@ public sealed class UnhidePostEndpoint(IPostStore posts) : Endpoint<PostByIdRequ
 
     public override async Task HandleAsync(PostByIdRequest req, CancellationToken ct)
     {
-        var updated = posts.Unhide(req.Id);
+        AppPost? updated;
+        try
+        {
+            updated = posts.Unhide(req.Id);
+        }
+        catch (PostNotFoundException)
+        {
+            await Send.NotFoundAsync(ct);
+            return;
+        }
+
         if (updated is null)
         {
             await Send.NotFoundAsync(ct);

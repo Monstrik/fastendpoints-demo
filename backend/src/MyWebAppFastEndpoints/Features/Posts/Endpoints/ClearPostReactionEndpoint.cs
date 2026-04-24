@@ -22,7 +22,17 @@ public sealed class ClearPostReactionEndpoint(IPostStore posts) : Endpoint<PostB
             return;
         }
 
-        var updated = posts.ClearReaction(req.Id, userId.Value);
+        AppPost? updated;
+        try
+        {
+            updated = posts.ClearReaction(req.Id, userId.Value);
+        }
+        catch (PostNotFoundException)
+        {
+            await Send.NotFoundAsync(ct);
+            return;
+        }
+
         if (updated is null)
         {
             await Send.NotFoundAsync(ct);

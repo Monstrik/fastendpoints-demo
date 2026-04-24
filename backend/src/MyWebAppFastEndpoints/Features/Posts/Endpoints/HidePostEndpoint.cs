@@ -10,7 +10,17 @@ public sealed class HidePostEndpoint(IPostStore posts) : Endpoint<PostByIdReques
 
     public override async Task HandleAsync(PostByIdRequest req, CancellationToken ct)
     {
-        var hidden = posts.Hide(req.Id);
+        AppPost? hidden;
+        try
+        {
+            hidden = posts.Hide(req.Id);
+        }
+        catch (PostNotFoundException)
+        {
+            await Send.NotFoundAsync(ct);
+            return;
+        }
+
         if (hidden is null)
         {
             await Send.NotFoundAsync(ct);
