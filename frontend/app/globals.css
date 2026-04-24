@@ -581,3 +581,45 @@ button.post-card-visibility:disabled {
   border-color: var(--link);
 }
 
+@media (max-width: 900px) {
+  header {
+    padding: 8px 14px;
+  }
+
+  .nav-menu {
+    min-height: 50px;
+    gap: 12px;
+  }
+
+  .nav-links {
+    gap: 8px;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+
+  .nav-brand-logo {
+    height: 24px;
+  }
+
+  main {
+    max-width: 100%;
+    padding: 14px 10px 24px;
+  }
+
+  main > * {
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .post-card {
+    padding: 12px;
+  }
+
+  .post-card-header {
+    align-items: flex-start;
+  }
+}
+
